@@ -1,0 +1,31 @@
+name: Lint, Test and Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: Build and test code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v4
+        with:
+          bun-version: latest
+
+      - name: Install
+        run: bun install
+        
+      - name: Build
+        run: bun run dist
+
+      - name: Lint
+        run: bun run lint   
+      
+      - name: Test
+        run: bun run test
+      

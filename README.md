@@ -1,3 +1,3 @@
-# perlica framework 
+# Perlica
 
 WIP

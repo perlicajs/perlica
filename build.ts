@@ -1,10 +1,39 @@
-import { build } from "bun";
+import { $ }                   from "bun";
+import { build, type Options } from "tsup";
 
-await build({
+const tsupConfig = {
+  entry:     ["src/**/*.ts"],
+  splitting: false,
+  sourcemap: false,
+  clean:     true,
+  bundle:    true,
+} satisfies Options;
+
+await Promise.all([
+  build({
+    outDir:     "dist",
+    format:     "esm",
+    target:     "node20",
+    cjsInterop: false,
+    ...tsupConfig,
+  }),
+  build({
+    outDir: "dist/cjs",
+    format: "cjs",
+    target: "node20",
+    ...tsupConfig,
+  }),
+]);
+
+await $`tsc --project tsconfig.dts.json`;
+
+await Bun.build({
   entrypoints: ["./src/index.ts"],
-  outdir: "./dist",
-  minify: true,
-  sourcemap: "external",
+  outdir:      "./dist",
+  minify:      true,
+  sourcemap:   "external",
 });
+
+await $`cp dist/*.d.ts dist/cjs`;
 
 process.exit();
