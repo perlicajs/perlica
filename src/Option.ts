@@ -214,19 +214,11 @@ export const OptionProto = {
   },
 
   unwrapOr<T>(this: Option<T>, def: T): T {
-    if (isSome(this)) {
-      return this.value;
-    } else {
-      return def;
-    }
+    return isSome(this) ?  this.value : def;
   },
 
   unwrapOrElse<T>(this: Option<T>, def: () => T): T {
-    if (isSome(this)) {
-      return this.value;
-    } else {
-      return def();
-    }
+    return isSome(this) ?  this.value : def();
   },
 
   xor<T>(this: Option<T>, v: Option<T>): Option<T> {

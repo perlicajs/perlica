@@ -262,19 +262,11 @@ export const ResultProto = {
   },
 
   unwrapOr<T, E>(this: Result<T, E>, def: T): T {
-    if (isOk(this)) {
-      return this.value;
-    } else {
-      return def;
-    }
+    return isOk(this) ? this.value : def;
   },
 
   unwrapOrElse<T, E>(this: Result<T, E>, def: (v: E) => T): T {
-    if (isOk(this)) {
-      return this.value;
-    } else {
-      return def(this.value);
-    }
+    return isOk(this) ? this.value : def(this.value);
   },
 
   andPromise<T, E, U>(this: Result<T, E>, v: Promise<U>): Future<U, E> {
