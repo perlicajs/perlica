@@ -1,6 +1,7 @@
+/* eslint-disable @stylistic/yield-star-spacing */
 import { describe, it, expect } from "bun:test";
 
-import { err, ok, type Err, type Ok, type Result } from "~/Result";
+import { err, ok, type Err, type Ok, type Result, bind } from "~/Result";
 
 import type { Assert } from "./Helpers";
 
@@ -209,6 +210,58 @@ describe("result", () => {
 
       type _a = Assert<number, typeof a>;
       type _b = Assert<() => string, typeof b>;
+    }
+  });
+
+  it("bind", () => {
+    {
+      const a = bind(function* () {
+        return yield* ok(1);
+      }).unwrap();
+
+      const b = () => bind(function* () {
+        return yield* err(1);
+      }).unwrap();
+
+      expect(a).toEqual(1);
+      expect(b).toThrow(`called \`Result.unwrap()\` on an \`Err\` value: 1`);
+
+      type _a = Assert<number, typeof a>;
+      type _b = Assert<() => never, typeof b>;
+    }
+    {
+      const a = bind(function* () {
+        const a = yield* ok(1);
+        const b = yield* ok({ num: 1 });
+        return a + b.num;
+      }).unwrap();
+
+      expect(a).toEqual(2);
+
+      type _a = Assert<number, typeof a>;
+    }
+    {
+      const a = bind(function* () {
+        const a = yield* ok(1);
+        const b = yield* err("error");
+        return a + b;
+      });
+
+      expect(a.value).toEqual("error");
+
+      type _a = Assert<Result<number, string>, typeof a>;
+    }
+    {
+      const a = bind(function* () {
+        const a = yield* ok(1);
+        const b = yield* err("error");
+        const c = yield* err(22);
+        return a + b + c;
+      });
+
+      expect(a.value).toEqual("error");
+
+      type _a = Assert<Result<number, string | number>, typeof a>;
     }
   });
 });
