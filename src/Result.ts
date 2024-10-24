@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  *    |----------------------|------------------|
  *    | Rust methods         | Perlica          |
@@ -52,15 +53,14 @@
  */
 
 import { future, tryPromise, type Future } from "./Future";
+import { OnceIterator }                    from "./Iterator";
 import { isNone, none, some, type Option } from "./Option";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type OkType<R> = R extends Result<infer T, any> ? T : any;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ErrType<R> = R extends Result<any, infer E> ? E : any;
 
-export interface ResultTrait {
+export interface ResultTrait<T, E> {
   and<U, T, E>(this: Result<T, E>, f: (v: T) => U): Result<U, E>;
 
   andThen<U, T, E>(this: Result<T, E>, f: (v: T) => Result<U, E>): Result<U, E>;
@@ -124,25 +124,27 @@ export interface ResultTrait {
   orElseFuture<U, T, E>(this: Result<T, E>, f: (v: E) => Future<T, U>): Future<T, U>;
 
   orElsePromise<U, T, E>(this: Result<T, E>, f: (v: E) => Promise<T>): Future<T, U>;
+
+  [Symbol.iterator](this: Result<T, E>): OnceIterator<Result<T, E>, T>;
 }
 
 export const isOk = <T, E>(r: Result<T, E>): r is Ok<T> => r.tag === "ok";
 
 export const isErr = <T, E>(r: Result<T, E>): r is Err<E> => r.tag === "err";
 
-export interface Ok<T> extends ResultTrait {
+export interface Ok<T> extends ResultTrait<T, never> {
   tag:   "ok";
   value: T;
 }
 
-export interface Err<E> extends ResultTrait {
+export interface Err<E> extends ResultTrait<never, E> {
   tag:   "err";
   value: E;
 }
 
 export type Result<T, E> = Ok<T> | Err<E>;
 
-export const ResultProto = {
+export const ResultProto = <T, E>(): ResultTrait<T, E> => ({
   and<U, T, E>(this: Result<T, E>, f: (v: T) => U): Result<U, E> {
     return isOk(this) ? ok(f(this.value)) : err(this.value);
   },
@@ -300,7 +302,11 @@ export const ResultProto = {
   orElsePromise<U, T, E>(this: Result<T, E>, f: (v: E) => Promise<T>): Future<T, U> {
     return isErr(this) ? tryPromise(f(this.value)) : future<T, U>(this);
   },
-} satisfies ResultTrait;
+
+  [Symbol.iterator]() {
+    return new OnceIterator(this);
+  },
+});
 
 export const fromNullable = <T, E>(v: T, f: () => E): Result<T, E> => v == null ? err(f()) : ok(v);
 
@@ -314,16 +320,42 @@ export const tryCatch = <T, E>(f: () => T): Result<T, E> => {
   }
 };
 
-export const ok = <T = never, E = never>(v: T): Result<T, E> => {
-  const a = Object.create(ResultProto);
+export const ok = <T, E = never>(v: T): Result<T, E> => {
+  const a = Object.create(ResultProto<T, E>());
   a.value = v;
   a.tag = "ok";
   return a;
 };
 
-export const err = <T = never, E = never>(v: E): Result<T, E> => {
-  const a = Object.create(ResultProto);
+export const err = <E, T = never>(v: E): Result<T, E> => {
+  const a = Object.create(ResultProto<T, E>());
   a.value = v;
   a.tag = "err";
   return a;
+};
+
+interface Bind {
+  <T extends Result<any, any>, R>(
+    fn: () => Generator<T, R>,
+  ): Result<
+    R,
+    T extends Err<infer E> ? E : never
+  >;
+}
+
+export const bind: Bind = fn => {
+  const iter = fn();
+  let result = iter.next();
+
+  while (true) {
+    if (result.done) {
+      return ok(result.value);
+    }
+
+    if (isOk(result.value)) {
+      result = iter.next(result.value.value);
+    } else {
+      return result.value;
+    }
+  }
 };
