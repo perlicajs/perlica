@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  *    |-----------------------|-------------------|
  *    | Rust methods          | Perlica           |
@@ -51,12 +52,12 @@
  *    |-----------------------|-------------------|
  *
  */
+import { OnceIterator }                from "./Iterator";
 import { err, isErr, ok, type Result } from "./Result";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SomeType<R> = R extends Option<infer T> ? T : any;
 
-export interface OptionTrait {
+export interface OptionTrait<T> {
   and<U, T>(this: Option<T>, v: Option<U>): Option<U>;
 
   andThen<U, T>(this: Option<T>, f: (v: T) => Option<U>): Option<U>;
@@ -100,30 +101,32 @@ export interface OptionTrait {
   unwrapOrElse<T>(this: Option<T>, def: () => T): T;
 
   xor<T>(this: Option<T>, v: Option<T>): Option<T>;
+
+  [Symbol.iterator](this: Option<T>): OnceIterator<Option<T>, T>;
 }
 
 export const isSome = <T>(r: Option<T>): r is Some<T> => r.tag === "some";
 
 export const isNone = <T>(r: Option<T>): r is None => r.tag === "none";
 
-export interface Some<T> extends OptionTrait {
+export interface Some<T> extends OptionTrait<T> {
   value: T;
   tag:   "some";
 }
 
-export interface None extends OptionTrait {
+export interface None extends OptionTrait<never> {
   tag: "none";
 }
 
 export type Option<T> = Some<T> | None;
 
-export const OptionProto = {
+export const OptionProto = <T>(): OptionTrait<T> => ({
   and<U, T>(this: Option<T>, v: Option<U>): Option<U> {
-    return isSome(this) ? v : none;
+    return isSome(this) ? v : none();
   },
 
   andThen<T, U>(this: Option<T>, f: (v: T) => Option<U>): Option<U> {
-    return isSome(this) ? f(this.value) : none;
+    return isSome(this) ? f(this.value) : none();
   },
 
   expect<T>(this: Option<T>, msg: string): T {
@@ -136,12 +139,12 @@ export const OptionProto = {
 
   filter<T>(this: Option<T>, f: (v: T) => boolean): Option<T> {
     return isNone(this)
-      ? none
-      : f(this.value) ? this : none;
+      ? none()
+      : f(this.value) ? this : none();
   },
 
   flatten<T>(this: Option<Option<T>>): Option<T> {
-    return isSome(this) ? this.value : none;
+    return isSome(this) ? this.value : none();
   },
 
   inspect<T>(this: Option<T>, f: (v: T) => void): Option<T> {
@@ -149,7 +152,7 @@ export const OptionProto = {
       f(this.value);
       return some(this.value);
     } else {
-      return none;
+      return none();
     }
   },
 
@@ -170,7 +173,7 @@ export const OptionProto = {
   },
 
   map<T, U>(this: Option<T>, f: (v: T) => U): Option<U> {
-    return isSome(this) ? some(f(this.value)) : none;
+    return isSome(this) ? some(f(this.value)) : none();
   },
 
   mapOr<U, T>(this: Option<T>, def: U, f: (v: T) => U): U {
@@ -199,7 +202,7 @@ export const OptionProto = {
 
   transpose<T, E>(this: Option<Result<T, E>>): Result<Option<T>, E> {
     return isNone(this)
-      ? ok(none)
+      ? ok(none())
       : isErr(this.value)
         ? err(this.value.value)
         : ok(some(this.value.value));
@@ -226,12 +229,16 @@ export const OptionProto = {
       ? this
       : isNone(this) && isSome(v)
         ? v
-        : none;
+        : none();
   },
-};
+
+  [Symbol.iterator]() {
+    return new OnceIterator(this);
+  },
+});
 
 export const fromNullable = <T>(v: T): Option<NonNullable<T>> =>
-  v == null ? none : some(v as NonNullable<T>);
+  v == null ? none() : some(v as NonNullable<T>);
 
 export const fromResult = <T, E>(v: Result<T, E>): Option<T> => v.ok();
 
@@ -239,21 +246,42 @@ export const tryCatch = <T>(f: () => T): Option<T> => {
   try {
     return some(f());
   } catch (_) {
-    return none;
+    return none();
   }
 };
 
 export const some = <T = never>(v: T): Option<T> => {
-  const a = Object.create(OptionProto);
+  const a = Object.create(OptionProto<T>());
   a.value = v;
   a.tag = "some";
   return a;
 };
 
-export const none: None = (() => {
-  const a = Object.create(OptionProto);
+export const none = <T = never>(): Option<T> => {
+  const a = Object.create(OptionProto<T>());
   a.tag = "none";
   return a;
-})();
+};
 
-Object.freeze(none);
+interface Bind {
+  <T extends Option<any>, R>(
+    fn: () => Generator<T, R>,
+  ): Option<R>;
+}
+
+export const bind: Bind = fn => {
+  const iter = fn();
+  let result = iter.next();
+
+  while (true) {
+    if (result.done) {
+      return some(result.value);
+    }
+
+    if (isSome(result.value)) {
+      result = iter.next(result.value.value);
+    } else {
+      return result.value;
+    }
+  }
+};

@@ -154,7 +154,7 @@ export const ResultProto = <T, E>(): ResultTrait<T, E> => ({
   },
 
   err<T, E>(this: Result<T, E>): Option<E> {
-    return isErr(this) ? some(this.value) : none;
+    return isErr(this) ? some(this.value) : none();
   },
 
   expect<T, E>(this: Result<T, E>, msg: string): T {
@@ -228,7 +228,7 @@ export const ResultProto = <T, E>(): ResultTrait<T, E> => ({
   },
 
   ok<T, E>(this: Result<T, E>): Option<T> {
-    return isOk(this) ? some(this.value) : none;
+    return isOk(this) ? some(this.value) : none();
   },
 
   or<U, T, E>(this: Result<T, E>, f: (v: E) => U): Result<T, U> {
@@ -243,7 +243,7 @@ export const ResultProto = <T, E>(): ResultTrait<T, E> => ({
     return isErr(this)
       ? some(err(this.value))
       : isNone(this.value)
-        ? none
+        ? none()
         : some(ok(this.value.value));
   },
 
