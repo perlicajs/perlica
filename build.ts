@@ -13,14 +13,12 @@ await Promise.all([
   build({
     outDir:     "dist",
     format:     "esm",
-    target:     "node20",
     cjsInterop: false,
     ...tsupConfig,
   }),
   build({
     outDir: "dist/cjs",
     format: "cjs",
-    target: "node20",
     ...tsupConfig,
   }),
 ]);

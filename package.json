@@ -12,7 +12,31 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    "./package.json": "./package.json"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./Result": {
+      "types": "./dist/Result.d.ts",
+      "import": "./dist/Result.js",
+      "require": "./dist/cjs/Result.cjs"
+    },
+    "./Option": {
+      "types": "./dist/Option.d.ts",
+      "import": "./dist/Option.js",
+      "require": "./dist/cjs/Option.cjs"
+    },
+    "./Future": {
+      "types": "./dist/Future.d.ts",
+      "import": "./dist/Future.js",
+      "require": "./dist/cjs/Future.cjs"
+    },
+    "./Iterator": {
+      "types": "./dist/Iterator.d.ts",
+      "import": "./dist/Iterator.js",
+      "require": "./dist/cjs/Iterator.cjs"
+    }
   },
   "repository": {
     "type": "git",
