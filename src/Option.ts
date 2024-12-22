@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  *    |-----------------------|-------------------|
  *    | Rust methods          | Perlica           |
@@ -50,7 +49,6 @@
  *    | zip                   |                   |
  *    | zip_with              |                   |
  *    |-----------------------|-------------------|
- *
  */
 import { OnceIterator }                from "./Iterator";
 import { err, isErr, ok, type Result } from "./Result";
@@ -249,6 +247,9 @@ export const tryCatch = <T>(f: () => T): Option<T> => {
     return none();
   }
 };
+
+export const tryPromise = async <T>(v: Promise<T>): Promise<Option<T>> =>
+  v.then(s => some(s)).catch(_ => none());
 
 export const some = <T = never>(v: T): Option<T> => {
   const a = Object.create(OptionProto<T>());

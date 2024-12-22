@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  *    |----------------------|------------------|
  *    | Rust methods         | Perlica          |
@@ -41,18 +40,9 @@
  *    | unwrap_or_else       | unwrapOrElse     |
  *    | unwrap_unchecked     |                  |
  *    |----------------------|------------------|
- *    |                      | andPromise       |
- *    |                      | andFuture        |
- *    |                      | andThenFuture    |
- *    |                      | andThenPromise   |
- *    |                      | orPromise        |
- *    |                      | orFuture         |
- *    |                      | orElseFuture     |
- *    |                      | orElsePromise    |
- *    |----------------------|------------------|
  */
 
-import { future, tryPromise, type Future } from "./Future";
+// import { future, tryPromise, type Future } from "./Future";
 import { OnceIterator }                    from "./Iterator";
 import { isNone, none, some, type Option } from "./Option";
 
@@ -108,22 +98,6 @@ export interface ResultTrait<T, E> {
   unwrapOr<T, E>(this: Result<T, E>, def: T): T;
 
   unwrapOrElse<T, E>(this: Result<T, E>, def: (v: E) => T): T;
-
-  andPromise<T, E, U>(this: Result<T, E>, v: Promise<U>): Future<U, E>;
-
-  andFuture<T, E, U>(this: Result<T, E>, v: Future<U, E>): Future<U, E>;
-
-  andThenFuture<T, E, U>(this: Result<T, E>, f: (v: T) => Future<U, E>): Future<U, E>;
-
-  andThenPromise<T, E, U>(this: Result<T, E>, f: (v: T) => Promise<U>): Future<U, E>;
-
-  orPromise<U, T, E>(this: Result<T, E>, v: Promise<T>): Future<T, U>;
-
-  orFuture<U, T, E>(this: Result<T, E>, v: Future<T, U>): Future<T, U>;
-
-  orElseFuture<U, T, E>(this: Result<T, E>, f: (v: E) => Future<T, U>): Future<T, U>;
-
-  orElsePromise<U, T, E>(this: Result<T, E>, f: (v: E) => Promise<T>): Future<T, U>;
 
   [Symbol.iterator](this: Result<T, E>): OnceIterator<Result<T, E>, T>;
 }
@@ -271,38 +245,6 @@ export const ResultProto = <T, E>(): ResultTrait<T, E> => ({
     return isOk(this) ? this.value : def(this.value);
   },
 
-  andPromise<T, E, U>(this: Result<T, E>, v: Promise<U>): Future<U, E> {
-    return isOk(this) ? tryPromise(v) : future<U, E>(this);
-  },
-
-  andFuture<T, E, U>(this: Result<T, E>, v: Future<U, E>): Future<U, E> {
-    return isOk(this) ? v : future<U, E>(this);
-  },
-
-  andThenPromise<T, E, U>(this: Result<T, E>, f: (v: T) => Promise<U>): Future<U, E> {
-    return isOk(this) ? tryPromise(f(this.value)) : future<U, E>(this);
-  },
-
-  andThenFuture<T, E, U>(this: Result<T, E>, f: (v: T) => Future<U, E>): Future<U, E> {
-    return isOk(this) ? f(this.value) : future<U, E>(this);
-  },
-
-  orPromise<U, T, E>(this: Result<T, E>, v: Promise<T>): Future<T, U> {
-    return isErr(this) ? tryPromise(v) : future<T, U>(this);
-  },
-
-  orFuture<U, T, E>(this: Result<T, E>, v: Future<T, U>): Future<T, U> {
-    return isErr(this) ? v : future<T, U>(this);
-  },
-
-  orElseFuture<U, T, E>(this: Result<T, E>, f: (v: E) => Future<T, U>): Future<T, U> {
-    return isErr(this) ? f(this.value) : future<T, U>(this);
-  },
-
-  orElsePromise<U, T, E>(this: Result<T, E>, f: (v: E) => Promise<T>): Future<T, U> {
-    return isErr(this) ? tryPromise(f(this.value)) : future<T, U>(this);
-  },
-
   [Symbol.iterator]() {
     return new OnceIterator(this);
   },
@@ -319,6 +261,9 @@ export const tryCatch = <T, E>(f: () => T): Result<T, E> => {
     return err(e as E);
   }
 };
+
+export const tryPromise = async <T, E>(v: Promise<T>): Promise<Result<T, E>> =>
+  v.then(s => ok(s)).catch(f => err(f));
 
 export const ok = <T, E = never>(v: T): Result<T, E> => {
   const a = Object.create(ResultProto<T, E>());

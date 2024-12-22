@@ -1,7 +1,7 @@
 # Perlica
 
 > [!WARNING]
->  🚧 Work in progress!
+> 🚧 Work in progress!
 
 ## Getting Started
 
@@ -26,7 +26,6 @@ bun add perlica
 - [x] [`Result`](https://doc.rust-lang.org/std/result/enum.Result.html)
 - [x] [`Option`](https://doc.rust-lang.org/std/option/enum.Option.html)
 - [x] `Future` - Safety `Promise` whose value is packed in `Result`
-- [x] `Do notation` for `Result`, `Option` and `Future`
 - [ ] Static methods
 - [ ] Validation
 - [ ] Pattern matching
