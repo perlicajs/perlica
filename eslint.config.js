@@ -34,6 +34,7 @@ export default tslint.config(
       "align-import/align-import": ["error"],
 
       "@typescript-eslint/no-confusing-void-expression": "off",
+      "@typescript-eslint/no-explicit-any":              "off",
       "@typescript-eslint/no-unused-vars":               [
         "error",
         {
