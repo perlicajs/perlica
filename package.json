@@ -47,11 +47,13 @@
   "keywords": [
     "bun",
     "nodejs",
+    "ts",
+    "typesafe",
+    "inference",
     "typescript",
     "typeclass",
     "result",
     "option",
-    "future",
     "type-inference"
   ],
   "scripts": {
