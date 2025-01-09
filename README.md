@@ -1,7 +1,15 @@
-# Perlica
+<h1 align="center">Perlica</h1>
+
+<p align="center">
+Result and Option implemented like in Rust.
+</p>
 
 > [!WARNING]
 > 🚧 Work in progress!
+
+## Documentation
+
+For detailed information and usage examples, please visit the [website](https://perlicajs.com).
 
 ## Getting Started
 
@@ -20,15 +28,6 @@ yarn add perlica
 ```sh
 bun add perlica
 ```
-
-## TODO
-
-- [x] [`Result`](https://doc.rust-lang.org/std/result/enum.Result.html)
-- [x] [`Option`](https://doc.rust-lang.org/std/option/enum.Option.html)
-- [x] `Do notation` for `Result` and `Option`
-- [ ] Static methods
-- [ ] Validation
-- [ ] Pattern matching
 
 ## License
 
