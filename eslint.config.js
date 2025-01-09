@@ -26,10 +26,11 @@ export default tslint.config(
       "align-import": alignImport,
     },
     rules: {
-      "@stylistic/max-len":         ["error", { code: 100 }],
-      "@stylistic/arrow-parens":    ["error", "as-needed"],
-      "@stylistic/key-spacing":     ["error", { mode: "minimum", align: "value" }],
-      "@stylistic/no-multi-spaces": ["off"],
+      "@stylistic/max-len":            ["error", { code: 100 }],
+      "@stylistic/arrow-parens":       ["error", "as-needed"],
+      "@stylistic/key-spacing":        ["error", { mode: "minimum", align: "value" }],
+      "@stylistic/no-multi-spaces":    ["off"],
+      "@stylistic/yield-star-spacing": ["error", { before: false, after: true }],
 
       "align-import/align-import": ["error"],
 
