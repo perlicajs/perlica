@@ -62,15 +62,19 @@
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix",
     "dist": "bun build.ts",
-    "release": "bun dist && bun lint:fix && bun test && npm publish"
+    "release": "bun dist && bun lint:fix && bun test && npm publish",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^2.12.1",
-    "@types/bun": "^1.1.14",
+    "@types/bun": "^1.1.15",
     "eslint": "^9.17.0",
     "eslint-plugin-align-import": "^1.0.0",
     "tsup": "^8.3.5",
     "typescript": "~5.5.4",
-    "typescript-eslint": "^7.18.0"
+    "typescript-eslint": "^7.18.0",
+    "vitepress": "^1.5.0"
   }
 }
