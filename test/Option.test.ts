@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/yield-star-spacing */
 import { describe, it, expect } from "bun:test";
 
 import { none, some, bind, type Option } from "~/Option";
