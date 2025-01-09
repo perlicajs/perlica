@@ -214,4 +214,64 @@ describe("result", () => {
       type _t3 = Assert<Result<number, Error>, typeof t3>;
     }
   });
+
+  it("expect", () => {
+    {
+      const a = ok(4);
+      const b = err("error");
+
+      const t = a.expect("my error message");
+
+      expect(t).toEqual(4);
+      expect(() => b.expect("my error message")).toThrowError("my error message");
+
+      type _t = Assert<number, typeof t>;
+    }
+    {
+      const t = resultOk.expect("my error message");
+
+      expect(t).toEqual(4);
+      expect(() => resultErr.expect("my error message")).toThrowError("my error message");
+
+      type _t = Assert<number, typeof t>;
+    }
+    {
+      const t = unionOk.expect("my error message");
+
+      expect(t).toEqual(4);
+      expect(() => unionErr.expect("my error message")).toThrowError("my error message");
+
+      type _t = Assert<number, typeof t>;
+    }
+  });
+
+  it("expectErr", () => {
+    {
+      const a = ok(4);
+      const b = err("error");
+
+      const t = b.expectErr("my error message");
+
+      expect(() => a.expectErr("my error message")).toThrowError("my error message");
+      expect(t).toEqual("error");
+
+      type _t = Assert<string, typeof t>;
+    }
+    {
+      const t = resultErr.expectErr("my error message");
+
+      expect(() => resultOk.expectErr("my error message")).toThrowError("my error message");
+      expect(t).toEqual("error");
+
+      type _t = Assert<string, typeof t>;
+    }
+    {
+      const t = unionErr.expectErr("my error message");
+
+      expect(() => unionOk.expectErr("my error message")).toThrowError("my error message");
+      expect(t).toEqual("error");
+
+      type _t = Assert<string, typeof t>;
+    }
+  });
 });

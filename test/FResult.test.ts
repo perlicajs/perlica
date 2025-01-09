@@ -67,6 +67,34 @@ describe("result", () => {
     }
   });
 
+  it("expect", () => {
+    {
+      const a = R.ok(4);
+      const b = R.err("error");
+
+      const t = R.expect(a, "my error message");
+
+      expect(t).toEqual(4);
+      expect(() => R.expect(b, "my error message")).toThrowError("my error message");
+
+      type _t = Assert<number, typeof t>;
+    }
+  });
+
+  it("expectErr", () => {
+    {
+      const a = R.ok(4);
+      const b = R.err("error");
+
+      const t = R.expectErr(b, "my error message");
+
+      expect(() => R.expectErr(a, "my error message")).toThrowError("my error message");
+      expect(t).toEqual("error");
+
+      type _t = Assert<string, typeof t>;
+    }
+  });
+
   it("bind", () => {
     {
       const a = R.bind(function* () {

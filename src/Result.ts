@@ -52,7 +52,7 @@ export type ErrType<R> = R extends Result<any, infer E> ? E : any;
 
 export interface ResultTrait<T, E> {
   /**
-   * Returns `res` if this is `Ok`, otherwise returns `Err`.
+   * Returns `res` if `this` is `Ok`, otherwise returns `Err`.
    *
    * # Examples
    * ```ts
@@ -74,11 +74,12 @@ export interface ResultTrait<T, E> {
    * const b = ok(12);
    * expect(a.and(b)).toEqual(ok(12));
    * ```
+   * See also the **[Result.and](https://doc.rust-lang.org/std/result/enum.Result.html#method.and)**
    */
   and<U, T, E>(this: Result<T, E>, res: Result<U, E>): Result<U, E>;
 
   /**
-   * Returns `f` call result if this is `Ok`, otherwise returns `Err`.
+   * Returns `f` call if `this` is `Ok`, otherwise returns `Err`.
    *
    * # Examples
    * ```ts
@@ -93,13 +94,42 @@ export interface ResultTrait<T, E> {
    * expect(ok("hello").andThen(string_to_number)).toEqual(err(Error("Not a Number")));
    * expect(err(Error("old error")).andThen(string_to_number)).toEqual(err(Error("old error")));
    * ```
+   * See also the **[Result.and_then](https://doc.rust-lang.org/std/result/enum.Result.html#method.and_then)**
    */
   andThen<U, T, E>(this: Result<T, E>, f: (v: T) => Result<U, E>): Result<U, E>;
 
   err<T, E>(this: Result<T, E>): Option<E>;
 
+  /**
+   * Returns the contained value `T` if `this` is `Ok`, otherwise throw exception `msg`.
+   *
+   * ```ts
+   * import { err, ok } from "perlica/Result";
+   *
+   * const a = ok(4);
+   * const b = err("error");
+   *
+   * expect(a.expect("my error message")).toEqual(4);
+   * expect(() => b.expect("my error message")).toThrowError("my error message");
+   * ```
+   * See also the **[Result.expect](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect)**
+   */
   expect<T, E>(this: Result<T, E>, msg: string): T;
 
+  /**
+   * Returns the contained value `E` if `this` is `Err`, otherwise throw exception `msg`.
+   *
+   * ```ts
+   * import { err, ok } from "perlica/Result";
+   *
+   * const a = ok(4);
+   * const b = err("error");
+   *
+   * expect(() => a.expectErr("my error message")).toThrowError("my error message");
+   * expect(t).toEqual("error");
+   * ```
+   * See also the **[Result.expect_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect_err)**
+   */
   expectErr<T, E>(this: Result<T, E>, msg: string): E;
 
   flatten<T, E>(this: Result<Result<T, E>, E>): Result<T, E>;
@@ -144,38 +174,39 @@ export interface ResultTrait<T, E> {
 }
 
 /**
-   * Returns `res2` if this is `Ok`, otherwise returns res1 `Err`.
-   *
-   * # Examples
-   * ```ts
-   * import * as R from "~/Result";
-   *
-   * const a = ok(4);
-   * const b = err("new error");
-   * expect(R.and(a, b)).toEqual(err("new error"));
-   *
-   * const a = err("old error");
-   * const b = ok(4);
-   * expect(R.and(a, b)).toEqual(err("old error"));
-   *
-   * const a = err("old error");
-   * const b = err("new error");
-   * expect(R.and(a, b)).toEqual(err("old error"));
-   *
-   * const a = ok(4);
-   * const b = ok(12);
-   * expect(R.and(a, b)).toEqual(ok(12));
-   * ```
-   */
+ * Returns `res2` if `res1` is `Ok`, otherwise returns `res1`.
+ *
+ * # Examples
+ * ```ts
+ * import * as R from "perlica/Result";
+ *
+ * const a = ok(4);
+ * const b = err("new error");
+ * expect(R.and(a, b)).toEqual(err("new error"));
+ *
+ * const a = err("old error");
+ * const b = ok(4);
+ * expect(R.and(a, b)).toEqual(err("old error"));
+ *
+ * const a = err("old error");
+ * const b = err("new error");
+ * expect(R.and(a, b)).toEqual(err("old error"));
+ *
+ * const a = ok(4);
+ * const b = ok(12);
+ * expect(R.and(a, b)).toEqual(ok(12));
+ * ```
+ * See also the **[Result.and](https://doc.rust-lang.org/std/result/enum.Result.html#method.and)**
+ */
 export const and = <U, T, E>(res1: Result<T, E>, res2: Result<U, E>): Result<U, E> =>
   res1.and(res2);
 
 /**
- * Returns `f` call result if this is `Ok`, otherwise returns `res1` `Err`.
+ * Returns `f` call if `res1` is `Ok`, otherwise returns `res1`.
  *
  * # Examples
  * ```ts
- * import * as R from "~/Result";
+ * import * as R from "perlica/Result";
  *
  * const string_to_number = (num: string): Result<number, Error> => {
  *   const v = Number(num);
@@ -186,13 +217,92 @@ export const and = <U, T, E>(res1: Result<T, E>, res2: Result<U, E>): Result<U, 
  * expect(R.andThen(ok("hello"), string_to_number)).toEqual(err(Error("Not a Number")));
  * expect(R.andThen(err(Error("old error")), string_to_number)).toEqual(err(Error("old error")));
  * ```
+ * See also the **[Result.and_then](https://doc.rust-lang.org/std/result/enum.Result.html#method.and_then)**
  */
 export const andThen = <U, T, E>(res1: Result<T, E>, f: (v: T) => Result<U, E>): Result<U, E> =>
   res1.andThen(f);
 
+/**
+ * Returns the contained value `T` if `res` is `Ok`, otherwise throw exception `msg`.
+ *
+ * ```ts
+ * import * as R from "perlica/Result";
+ *
+ * const a = R.ok(4);
+ * const b = R.err("error");
+ *
+ * expect(R.expect(a, "my error message")).toEqual(4);
+ * expect(() => R.expect(b, "my error message")).toThrowError("my error message");
+ * ```
+ * See also the **[Result.expect](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect)**
+ */
+export const expect = <T, E>(res: Result<T, E>, msg: string): T => res.expect(msg);
+
+/**
+ * Returns the contained value `E` if `res` is `Err`, otherwise throw exception `msg`.
+ *
+ * ```ts
+ * import * as R from "perlica/Result";
+ *
+ * const a = ok(4);
+ * const b = err("error");
+ *
+ * expect(() => a.expectErr("my error message")).toThrowError("my error message");
+ * expect(t).toEqual("error");
+ * ```
+ * See also the **[Result.expect_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect_err)**
+ */
+export const expectErr = <T, E>(res: Result<T, E>, msg: string): E => res.expectErr(msg);
+
 export const isOk = <T, E>(r: Result<T, E>): r is Ok<T> => r.tag === "ok";
 
 export const isErr = <T, E>(r: Result<T, E>): r is Err<E> => r.tag === "err";
+
+export const fromNullable = <T, E>(v: T, f: () => E): Result<T, E> => v == null ? err(f()) : ok(v);
+
+export const fromOption = <T, E>(v: Option<T>, f: () => E): Result<T, E> => v.okOr(f());
+
+export const tryCatch = <T, E>(f: () => T): Result<T, E> => {
+  try {
+    return ok(f());
+  } catch (e) {
+    return err(e as E);
+  }
+};
+
+export const tryPromise = async <T, E>(v: Promise<T>): Promise<Result<T, E>> =>
+  v.then(s => ok(s)).catch(f => err(f));
+
+export const bind: Bind = fn => {
+  const iter = fn();
+  let result = iter.next();
+
+  while (true) {
+    if (result.done) {
+      return ok(result.value);
+    }
+
+    if (isOk(result.value)) {
+      result = iter.next(result.value.value);
+    } else {
+      return result.value;
+    }
+  }
+};
+
+export const ok = <T, E = never>(v: T): Result<T, E> => {
+  const a = Object.create(ResultProto<T, E>());
+  a.value = v;
+  a.tag = "ok";
+  return a;
+};
+
+export const err = <E, T = never>(v: E): Result<T, E> => {
+  const a = Object.create(ResultProto<T, E>());
+  a.value = v;
+  a.tag = "err";
+  return a;
+};
 
 export interface Ok<T> extends ResultTrait<T, never> {
   tag:   "ok";
@@ -338,35 +448,6 @@ export const ResultProto = <T, E>(): ResultTrait<T, E> => ({
   },
 });
 
-export const fromNullable = <T, E>(v: T, f: () => E): Result<T, E> => v == null ? err(f()) : ok(v);
-
-export const fromOption = <T, E>(v: Option<T>, f: () => E): Result<T, E> => v.okOr(f());
-
-export const tryCatch = <T, E>(f: () => T): Result<T, E> => {
-  try {
-    return ok(f());
-  } catch (e) {
-    return err(e as E);
-  }
-};
-
-export const tryPromise = async <T, E>(v: Promise<T>): Promise<Result<T, E>> =>
-  v.then(s => ok(s)).catch(f => err(f));
-
-export const ok = <T, E = never>(v: T): Result<T, E> => {
-  const a = Object.create(ResultProto<T, E>());
-  a.value = v;
-  a.tag = "ok";
-  return a;
-};
-
-export const err = <E, T = never>(v: E): Result<T, E> => {
-  const a = Object.create(ResultProto<T, E>());
-  a.value = v;
-  a.tag = "err";
-  return a;
-};
-
 interface Bind {
   <T extends Result<any, any>, R>(
     fn: () => Generator<T, R>,
@@ -375,20 +456,3 @@ interface Bind {
     T extends Err<infer E> ? E : never
   >;
 }
-
-export const bind: Bind = fn => {
-  const iter = fn();
-  let result = iter.next();
-
-  while (true) {
-    if (result.done) {
-      return ok(result.value);
-    }
-
-    if (isOk(result.value)) {
-      result = iter.next(result.value.value);
-    } else {
-      return result.value;
-    }
-  }
-};
