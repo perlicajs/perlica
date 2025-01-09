@@ -19,6 +19,7 @@ export default defineConfig({
         text:  "API Documentation",
         items: [
           { text: "Result", link: "/api/result" },
+          { text: "Option", link: "/api/option" },
         ],
       },
     ],
