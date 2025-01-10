@@ -41,8 +41,6 @@
  *    | unwrap_unchecked     |                  |
  *    |----------------------|------------------|
  */
-
-// import { future, tryPromise, type Future } from "./Future";
 import { OnceIterator }                    from "./Iterator";
 import { isNone, none, some, type Option } from "./Option";
 
@@ -176,26 +174,26 @@ export interface ResultTrait<T, E> {
 /**
  * Returns `res2` if `res1` is `Ok`, otherwise returns `res1`.
  *
- * # Examples
  * ```ts
  * import * as R from "perlica/Result";
  *
- * const a = ok(4);
- * const b = err("new error");
- * expect(R.and(a, b)).toEqual(err("new error"));
+ * const a = R.ok(4);
+ * const b = R.err("new error");
+ * expect(R.and(a, b)).toEqual(R.err("new error"));
  *
- * const a = err("old error");
- * const b = ok(4);
- * expect(R.and(a, b)).toEqual(err("old error"));
+ * const a = R.err("old error");
+ * const b = R.ok(4);
+ * expect(R.and(a, b)).toEqual(R.err("old error"));
  *
- * const a = err("old error");
- * const b = err("new error");
- * expect(R.and(a, b)).toEqual(err("old error"));
+ * const a = R.err("old error");
+ * const b = R.err("new error");
+ * expect(R.and(a, b)).toEqual(R.err("old error"));
  *
- * const a = ok(4);
- * const b = ok(12);
- * expect(R.and(a, b)).toEqual(ok(12));
+ * const a = R.ok(4);
+ * const b = R.ok(12);
+ * expect(R.and(a, b)).toEqual(R.ok(12));
  * ```
+ *
  * See also the **[Result.and](https://doc.rust-lang.org/std/result/enum.Result.html#method.and)**
  */
 export const and = <U, T, E>(res1: Result<T, E>, res2: Result<U, E>): Result<U, E> =>
@@ -204,19 +202,19 @@ export const and = <U, T, E>(res1: Result<T, E>, res2: Result<U, E>): Result<U, 
 /**
  * Returns `f` call if `res1` is `Ok`, otherwise returns `res1`.
  *
- * # Examples
  * ```ts
  * import * as R from "perlica/Result";
  *
- * const string_to_number = (num: string): Result<number, Error> => {
+ * const string_to_number = (num: string): R.Result<number, Error> => {
  *   const v = Number(num);
- *   return isNaN(v) ? err(Error("Not a Number")) : ok(v);
+ *   return isNaN(v) ? R.err(Error("Not a Number")) : R.ok(v);
  * };
  *
- * expect(R.andThen(ok("4"), string_to_number)).toEqual(ok(4));
- * expect(R.andThen(ok("hello"), string_to_number)).toEqual(err(Error("Not a Number")));
- * expect(R.andThen(err(Error("old error")), string_to_number)).toEqual(err(Error("old error")));
+ * expect(R.andThen(R.ok("4"), string_to_number)).toEqual(R.ok(4));
+ * expect(R.andThen(R.ok("hello"), string_to_number)).toEqual(R.err(Error("Not a Number")));
+ * expect(R.andThen(R.err(Error("old error")), string_to_number)).toEqual(R.err(Error("old error")));
  * ```
+ *
  * See also the **[Result.and_then](https://doc.rust-lang.org/std/result/enum.Result.html#method.and_then)**
  */
 export const andThen = <U, T, E>(res1: Result<T, E>, f: (v: T) => Result<U, E>): Result<U, E> =>
@@ -244,12 +242,13 @@ export const expect = <T, E>(res: Result<T, E>, msg: string): T => res.expect(ms
  * ```ts
  * import * as R from "perlica/Result";
  *
- * const a = ok(4);
- * const b = err("error");
+ * const a = R.ok(4);
+ * const b = R.err("error");
  *
- * expect(() => a.expectErr("my error message")).toThrowError("my error message");
- * expect(t).toEqual("error");
+ * expect(() => R.expectErr(a, "my error message")).toThrowError("my error message");
+ * expect(R.expectErr(b, "my error message")).toEqual("error");
  * ```
+ *
  * See also the **[Result.expect_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect_err)**
  */
 export const expectErr = <T, E>(res: Result<T, E>, msg: string): E => res.expectErr(msg);
@@ -431,7 +430,7 @@ export const ResultProto = <T, E>(): ResultTrait<T, E> => ({
     if (isErr(this)) {
       return this.value;
     } else {
-      throw new Error(`called \`Result.unwrap()\` on an \`Ok\` value: ${String(this.value)}`);
+      throw new Error(`called \`Result.unwrapErr()\` on an \`Ok\` value: ${String(this.value)}`);
     }
   },
 
