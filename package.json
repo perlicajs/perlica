@@ -27,11 +27,6 @@
       "import": "./dist/Option.js",
       "require": "./dist/cjs/Option.cjs"
     },
-    "./Future": {
-      "types": "./dist/Future.d.ts",
-      "import": "./dist/Future.js",
-      "require": "./dist/cjs/Future.cjs"
-    },
     "./Iterator": {
       "types": "./dist/Iterator.d.ts",
       "import": "./dist/Iterator.js",
@@ -43,7 +38,7 @@
     "url": "https://github.com/perlicajs/perlica"
   },
   "bugs": "https://github.com/perlicajs/perlica/issues",
-  "homepage": "https://github.com/perlicajs/perlica",
+  "homepage": "https://perlicajs.com",
   "keywords": [
     "bun",
     "nodejs",
