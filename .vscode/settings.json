@@ -1,8 +1,0 @@
-{
-    "editor.indentSize": 2,
-    "editor.rulers": [100],
-    "eslint.experimental.useFlatConfig": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
-    }
-}
