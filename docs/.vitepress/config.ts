@@ -8,6 +8,9 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
     ],
+    search: {
+      provider: 'local'
+    },
     sidebar: [
       {
         text:  "Introduction",
