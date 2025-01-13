@@ -31,6 +31,11 @@
       "types": "./dist/Iterator.d.ts",
       "import": "./dist/Iterator.js",
       "require": "./dist/cjs/Iterator.cjs"
+    },
+    "./Predicate": {
+      "types": "./dist/Predicate.d.ts",
+      "import": "./dist/Predicate.js",
+      "require": "./dist/cjs/Predicate.cjs"
     }
   },
   "repository": {

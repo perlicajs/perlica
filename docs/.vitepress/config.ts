@@ -20,6 +20,7 @@ export default defineConfig({
         items: [
           { text: "Result", link: "/api/result" },
           { text: "Option", link: "/api/option" },
+          { text: "Predicate", link: "/api/predicate" },
         ],
       },
     ],

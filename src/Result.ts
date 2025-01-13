@@ -42,6 +42,7 @@
  *    |----------------------|------------------|
  */
 import { OnceIterator }                    from "./Iterator";
+import { isNotNullable }                   from "./Predicate";
 import { isNone, none, some, type Option } from "./Option";
 
 export type OkType<R> = R extends Result<infer T, any> ? T : any;
@@ -349,8 +350,8 @@ export const unwrapOr = <T, E>(self: Result<T, E>, def: T): T => self.unwrapOr(d
 export const unwrapOrElse = <T, E>(self: Result<T, E>, def: (v: E) => T): T =>
   self.unwrapOrElse(def);
 
-export const fromNullable = <T, E>(self: T, f: () => E): Result<T, E> =>
-  self == null ? err(f()) : ok(self);
+export const fromNullable = <T, E>(v: T, f: () => E): Result<T, E> =>
+  isNotNullable(v) ? ok(v) : err(f());
 
 export const fromOption = <T, E>(self: Option<T>, f: () => E): Result<T, E> => self.okOr(f());
 

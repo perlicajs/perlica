@@ -51,6 +51,7 @@
  *    |-----------------------|-------------------|
  */
 import { OnceIterator }                from "./Iterator";
+import { isNotNullable }               from "./Predicate";
 import { err, isErr, ok, type Result } from "./Result";
 
 export type SomeType<R> = R extends Option<infer T> ? T : any;
@@ -236,7 +237,7 @@ export const OptionProto = <T>(): OptionTrait<T> => ({
 });
 
 export const fromNullable = <T>(v: T): Option<NonNullable<T>> =>
-  v == null ? none() : some(v as NonNullable<T>);
+  isNotNullable(v) ? some(v) : none();
 
 export const fromResult = <T, E>(v: Result<T, E>): Option<T> => v.ok();
 
