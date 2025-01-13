@@ -110,7 +110,7 @@ export const any = <T>(predicates: Iterable<Predicate<T>>): Predicate<T> => {
 /**
  * Returns a new predicate.
  * Return true if `that` is equal to a pre-defined `value`.
- * 
+ *
  * ```ts
  * import { eq } from "perlica/Predicate"
  *
@@ -125,7 +125,7 @@ export const eq = <T>(that: T): Predicate<T> => value => value == that;
 /**
  * Returns a new predicate.
  * Return true if `that` is not equal to a pre-defined `value`.
- * 
+ *
  * ```ts
  * import { ne } from "perlica/Predicate"
  *
@@ -613,7 +613,7 @@ export const isBigUint64Array = (value: unknown): value is BigUint64Array =>
  *
  * ```ts
  * import { isDate } from "perlica/Predicate"
- * 
+ *
  * expect(isDate(new Date())).toBeTrue();
  * expect(isDate({})).toBeFalse();
  * ```
