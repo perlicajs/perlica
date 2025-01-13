@@ -274,4 +274,124 @@ describe("result", () => {
       type _t = Assert<string, typeof t>;
     }
   });
+
+  it("unwrap", () => {
+    {
+      const a = ok(4);
+      const b = err("error");
+
+      const t = a.unwrap();
+
+      expect(t).toEqual(4);
+      expect(() => b.unwrap())
+        .toThrowError(`called \`Result.unwrap()\` on an \`Err\` value: error`);
+
+      type _t = Assert<number, typeof t>;
+    }
+    {
+      const t = resultOk.unwrap();
+
+      expect(t).toEqual(4);
+      expect(() => resultErr.unwrap())
+        .toThrowError(`called \`Result.unwrap()\` on an \`Err\` value: error`);
+
+      type _t = Assert<number, typeof t>;
+    }
+    {
+      const t = resultOk.unwrap();
+
+      expect(t).toEqual(4);
+      expect(() => resultErr.unwrap())
+        .toThrowError(`called \`Result.unwrap()\` on an \`Err\` value: error`);
+
+      type _t = Assert<number, typeof t>;
+    }
+  });
+
+  it("unwrapErr", () => {
+    {
+      const a = ok(4);
+      const b = err("error");
+
+      const t = b.unwrapErr();
+
+      expect(t).toEqual("error");
+      expect(() => a.unwrapErr())
+        .toThrowError(`called \`Result.unwrapErr()\` on an \`Ok\` value: 4`);
+
+      type _t = Assert<string, typeof t>;
+    }
+    {
+      const t = resultErr.unwrapErr();
+
+      expect(t).toEqual("error");
+      expect(() => resultOk.unwrapErr())
+        .toThrowError(`called \`Result.unwrapErr()\` on an \`Ok\` value: 4`);
+
+      type _t = Assert<string, typeof t>;
+    }
+    {
+      const t = unionErr.unwrapErr();
+
+      expect(t).toEqual("error");
+      expect(() => unionOk.unwrapErr())
+        .toThrowError(`called \`Result.unwrapErr()\` on an \`Ok\` value: 4`);
+
+      type _t = Assert<string, typeof t>;
+    }
+  });
+
+  it("unwrapOr", () => {
+    {
+      const a = ok(4);
+      const b = err("error");
+
+      const t1 = a.unwrapOr(10);
+      const t2 = b.unwrapOr(10);
+
+      expect(t1).toEqual(4);
+      expect(t2).toEqual(10);
+
+      type _t1 = Assert<number, typeof t1>;
+      type _t2 = Assert<10, typeof t2>;
+    }
+    {
+      const t1 = resultOk.unwrapOr(10);
+      const t2 = resultErr.unwrapOr(10);
+
+      expect(t1).toEqual(4);
+      expect(t2).toEqual(10);
+
+      type _t1 = Assert<number, typeof t1>;
+      type _t2 = Assert<number, typeof t2>;
+    }
+    {
+      const t1 = unionOk.unwrapOr(10);
+      const t2 = unionErr.unwrapOr(10);
+
+      expect(t1).toEqual(4);
+      expect(t2).toEqual(10);
+
+      type _t1 = Assert<number, typeof t1>;
+      type _t2 = Assert<number, typeof t2>;
+    }
+  });
+
+  it("unwrapOr", () => {
+    {
+      const len = (s: string) => s.length;
+
+      const a = ok(4);
+      const b = err("error");
+
+      const t1 = a.unwrapOrElse(len);
+      const t2 = b.unwrapOrElse(len);
+
+      expect(t1).toEqual(4);
+      expect(t2).toEqual(5);
+
+      type _t1 = Assert<number, typeof t1>;
+      type _t2 = Assert<number, typeof t2>;
+    }
+  });
 });

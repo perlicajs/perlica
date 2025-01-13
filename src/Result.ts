@@ -124,7 +124,7 @@ export interface ResultTrait<T, E> {
    * const b = err("error");
    *
    * expect(() => a.expectErr("my error message")).toThrowError("my error message");
-   * expect(t).toEqual("error");
+   * expect(b.expectErr("my error message")).toEqual("error");
    * ```
    * See also the **[Result.expect_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect_err)**
    */
@@ -160,19 +160,65 @@ export interface ResultTrait<T, E> {
 
   transpose<T, E>(this: Result<Option<T>, E>): Option<Result<T, E>>;
 
+  /**
+   * Returns the contained value `Ok`, otherwise throw `Error` exception.
+   *
+   * ```ts
+   * import { err, ok } from "perlica/Result";
+   *
+   * expect(ok(4).unwrap()).toEqual(4);
+   * expect(() => err("error").unwrap()).toThrowError(`called \`Result.unwrap()\` on an \`Err\` value: error`);
+   * ```
+   * See also the **[Result.unwrap](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap)**
+   */
   unwrap<T, E>(this: Result<T, E>): T;
 
+  /**
+   * Returns the contained value `Err`, otherwise throw `Error` exception.
+   *
+   * ```ts
+   * import { err, ok } from "perlica/Result";
+   *
+   * expect(() => ok(4).unwrapErr()).toThrowError(`called \`Result.unwrapErr()\` on an \`Ok\` value: 4`);
+   * expect(err("error").unwrapErr()).toEqual("error");
+   * ```
+   * See also the **[Result.unwrap_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_err)**
+   */
   unwrapErr<T, E>(this: Result<T, E>): E;
 
+  /**
+   * Returns the contained value `Ok`, otherwise returns `def`.
+   *
+   * ```ts
+   * import { err, ok } from "perlica/Result";
+   *
+   * expect(ok(4).unwrapOr(10)).toEqual(4);
+   * expect(err("error").unwrapOr(10)).toEqual(10);
+   * ```
+   * See also the **[Result.unwrap_or](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or)**
+   */
   unwrapOr<T, E>(this: Result<T, E>, def: T): T;
 
+  /**
+   * Returns the contained value `Ok`, otherwise `def` call.
+   *
+   * ```ts
+   * import { err, ok } from "perlica/Result";
+   *
+   * const len = (s: string) => s.length;
+   *
+   * expect(ok(4).unwrapOrElse(len)).toEqual(4);
+   * expect(err("error").unwrapOrElse(len)).toEqual(5);
+   * ```
+   * See also the **[Result.unwrap_or_else](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or_else)**
+   */
   unwrapOrElse<T, E>(this: Result<T, E>, def: (v: E) => T): T;
 
   [Symbol.iterator](this: Result<T, E>): OnceIterator<Result<T, E>, T>;
 }
 
 /**
- * Returns `res2` if `res1` is `Ok`, otherwise returns `res1`.
+ * Returns `that` if `self` is `Ok`, otherwise returns `self`.
  *
  * ```ts
  * import * as R from "perlica/Result";
@@ -193,14 +239,13 @@ export interface ResultTrait<T, E> {
  * const b = R.ok(12);
  * expect(R.and(a, b)).toEqual(R.ok(12));
  * ```
- *
  * See also the **[Result.and](https://doc.rust-lang.org/std/result/enum.Result.html#method.and)**
  */
-export const and = <U, T, E>(res1: Result<T, E>, res2: Result<U, E>): Result<U, E> =>
-  res1.and(res2);
+export const and = <U, T, E>(self: Result<T, E>, that: Result<U, E>): Result<U, E> =>
+  self.and(that);
 
 /**
- * Returns `f` call if `res1` is `Ok`, otherwise returns `res1`.
+ * Returns `f` call if `self` is `Ok`, otherwise returns `self`.
  *
  * ```ts
  * import * as R from "perlica/Result";
@@ -214,52 +259,100 @@ export const and = <U, T, E>(res1: Result<T, E>, res2: Result<U, E>): Result<U, 
  * expect(R.andThen(R.ok("hello"), string_to_number)).toEqual(R.err(Error("Not a Number")));
  * expect(R.andThen(R.err(Error("old error")), string_to_number)).toEqual(R.err(Error("old error")));
  * ```
- *
  * See also the **[Result.and_then](https://doc.rust-lang.org/std/result/enum.Result.html#method.and_then)**
  */
-export const andThen = <U, T, E>(res1: Result<T, E>, f: (v: T) => Result<U, E>): Result<U, E> =>
-  res1.andThen(f);
+export const andThen = <U, T, E>(self: Result<T, E>, f: (v: T) => Result<U, E>): Result<U, E> =>
+  self.andThen(f);
 
 /**
- * Returns the contained value `T` if `res` is `Ok`, otherwise throw exception `msg`.
+ * Returns the contained value `T` if `self` is `Ok`, otherwise throw exception `msg`.
  *
  * ```ts
  * import * as R from "perlica/Result";
  *
- * const a = R.ok(4);
- * const b = R.err("error");
- *
- * expect(R.expect(a, "my error message")).toEqual(4);
- * expect(() => R.expect(b, "my error message")).toThrowError("my error message");
+ * expect(R.expect(R.ok(4), "my error message")).toEqual(4);
+ * expect(() => R.expect(R.err("error"), "my error message")).toThrowError("my error message");
  * ```
  * See also the **[Result.expect](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect)**
  */
-export const expect = <T, E>(res: Result<T, E>, msg: string): T => res.expect(msg);
+export const expect = <T, E>(self: Result<T, E>, msg: string): T => self.expect(msg);
 
 /**
- * Returns the contained value `E` if `res` is `Err`, otherwise throw exception `msg`.
+ * Returns the contained value `E` if `self` is `Err`, otherwise throw exception `msg`.
  *
  * ```ts
  * import * as R from "perlica/Result";
  *
- * const a = R.ok(4);
- * const b = R.err("error");
- *
- * expect(() => R.expectErr(a, "my error message")).toThrowError("my error message");
- * expect(R.expectErr(b, "my error message")).toEqual("error");
+ * expect(() => R.expectErr(R.ok(4), "my error message")).toThrowError("my error message");
+ * expect(R.expectErr(R.err("error"), "my error message")).toEqual("error");
  * ```
- *
  * See also the **[Result.expect_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect_err)**
  */
-export const expectErr = <T, E>(res: Result<T, E>, msg: string): E => res.expectErr(msg);
+export const expectErr = <T, E>(self: Result<T, E>, msg: string): E => self.expectErr(msg);
 
 export const isOk = <T, E>(r: Result<T, E>): r is Ok<T> => r.tag === "ok";
 
 export const isErr = <T, E>(r: Result<T, E>): r is Err<E> => r.tag === "err";
 
-export const fromNullable = <T, E>(v: T, f: () => E): Result<T, E> => v == null ? err(f()) : ok(v);
+/**
+ * Returns the contained value `Ok`, otherwise throw `Error` exception.
+ *
+ * ```ts
+ * import * as R from "perlica/Result";
+ *
+ * expect(R.unwrap(R.ok(4))).toEqual(4);
+ * expect(() => R.unwrap(R.err("error"))).toThrowError(`called \`Result.unwrap()\` on an \`Err\` value: error`);
+ * ```
+ * See also the **[Result.unwrap](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap)**
+ */
+export const unwrap = <T, E>(self: Result<T, E>): T => self.unwrap();
 
-export const fromOption = <T, E>(v: Option<T>, f: () => E): Result<T, E> => v.okOr(f());
+/**
+ * Returns the contained value `Err`, otherwise throw `Error` exception.
+ *
+ * ```ts
+ * import * as R from "perlica/Result";
+ *
+ * expect(() => R.unwrapErr(R.ok(4))).toThrowError(`called \`Result.unwrapErr()\` on an \`Ok\` value: 4`);
+ * expect(R.unwrapErr(R.err("error"))).toEqual("error");
+ * ```
+ * See also the **[Result.unwrap_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_err)**
+ */
+export const unwrapErr = <T, E>(self: Result<T, E>): E => self.unwrapErr();
+
+/**
+ * Returns the contained value `Ok`, otherwise returns `def`.
+ *
+ * ```ts
+ * import * as R from "perlica/Result";
+ *
+ * expect(R.unwrapOr(R.ok(4), 10)).toEqual(4);
+ * expect(R.unwrapOr(R.err("error"), 10)).toEqual(10);
+ * ```
+ * See also the **[Result.unwrap_or](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or)**
+ */
+export const unwrapOr = <T, E>(self: Result<T, E>, def: T): T => self.unwrapOr(def);
+
+/**
+ * Returns the contained value `Ok`, otherwise `def` call.
+ *
+ * ```ts
+ * import * as R from "perlica/Result";
+ *
+ * const len = (s: string) => s.length;
+ *
+ * expect(R.unwrapOrElse(R.ok(4), len)).toEqual(4);
+ * expect(R.unwrapOrElse(R.err("error"), len)).toEqual(5);
+ * ```
+ * See also the **[Result.unwrap_or_else](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or_else)**
+ */
+export const unwrapOrElse = <T, E>(self: Result<T, E>, def: (v: E) => T): T =>
+  self.unwrapOrElse(def);
+
+export const fromNullable = <T, E>(self: T, f: () => E): Result<T, E> =>
+  self == null ? err(f()) : ok(self);
+
+export const fromOption = <T, E>(self: Option<T>, f: () => E): Result<T, E> => self.okOr(f());
 
 export const tryCatch = <T, E>(f: () => T): Result<T, E> => {
   try {

@@ -113,6 +113,84 @@ expect(t).toEqual("error");
 
 See also the **[Result.expect_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect_err)**
 
+---
+
+### unwrap
+
+```ts
+unwrap<T, E>(this: Result<T, E>): T
+```
+
+Returns the contained value `Ok`, otherwise throw `Error` exception.
+
+```ts
+import { err, ok } from "perlica/Result";
+
+expect(ok(4).unwrap()).toEqual(4);
+expect(() => err("error").unwrap()).toThrowError(`called \`Result.unwrap()\` on an \`Err\` value: error`);
+```
+
+See also the **[Result.unwrap](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap)**
+
+---
+
+### unwrapErr
+
+```ts
+unwrapErr<T, E>(this: Result<T, E>): E
+```
+
+Returns the contained value `Err`, otherwise throw `Error` exception.
+
+```ts
+import { err, ok } from "perlica/Result";
+
+expect(() => ok(4).unwrapErr()).toThrowError(`called \`Result.unwrapErr()\` on an \`Ok\` value: 4`);
+expect(err("error").unwrapErr()).toEqual("error");
+```
+
+See also the **[Result.unwrap_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_err)**
+
+---
+
+### unwrapOr
+
+```ts
+unwrapOr<T, E>(this: Result<T, E>, def: T): T
+```
+
+Returns the contained value `Ok`, otherwise returns `def`.
+
+```ts
+import { err, ok } from "perlica/Result";
+
+expect(ok(4).unwrapOr(10)).toEqual(4);
+expect(err("error").unwrapOr(10)).toEqual(10);
+```
+
+See also the **[Result.unwrap_or](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or)**
+
+---
+
+### unwrapOrElse
+
+```ts
+unwrapOrElse<T, E>(this: Result<T, E>, def: (v: E) => T): T
+```
+
+Returns the contained value `Ok`, otherwise `def` call.
+
+```ts
+import { err, ok } from "perlica/Result";
+
+const len = (s: string) => s.length;
+
+expect(ok(4).unwrapOrElse(len)).toEqual(4);
+expect(err("error").unwrapOrElse(len)).toEqual(5);
+```
+
+See also the **[Result.unwrap_or_else](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or_else)**
+
 ## Functions
 
 ### and
@@ -213,3 +291,81 @@ expect(R.expectErr(b, "my error message")).toEqual("error");
 ```
 
 See also the **[Result.expect_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.expect_err)**
+
+---
+
+### unwrap
+
+```ts
+export const unwrap = <T, E>(self: Result<T, E>): T
+```
+
+Returns the contained value `Ok`, otherwise throw `Error` exception.
+
+```ts
+import * as R from "perlica/Result";
+
+expect(R.unwrap(R.ok(4))).toEqual(4);
+expect(() => R.unwrap(R.err("error"))).toThrowError(`called \`Result.unwrap()\` on an \`Err\` value: error`);
+```
+
+See also the **[Result.unwrap](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap)**
+
+---
+
+### unwrapErr
+
+```ts
+export const unwrapErr = <T, E>(self: Result<T, E>): E
+```
+
+Returns the contained value `Err`, otherwise throw `Error` exception.
+
+```ts
+import * as R from "perlica/Result";
+
+expect(() => R.unwrapErr(R.ok(4))).toThrowError(`called \`Result.unwrapErr()\` on an \`Ok\` value: 4`);
+expect(R.unwrapErr(R.err("error"))).toEqual("error");
+```
+
+See also the **[Result.unwrap_err](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_err)**
+
+---
+
+### unwrapOr
+
+```ts
+export const unwrapOr = <T, E>(self: Result<T, E>, def: T): T
+```
+
+Returns the contained value `Ok`, otherwise returns `def`.
+
+```ts
+import * as R from "perlica/Result";
+
+expect(R.unwrapOr(R.ok(4), 10)).toEqual(4);
+expect(R.unwrapOr(R.err("error"), 10)).toEqual(10);
+```
+
+See also the **[Result.unwrap_or](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or)**
+
+---
+
+### unwrapOrElse
+
+```ts
+export const unwrapOrElse = <T, E>(self: Result<T, E>, def: (v: E) => T): T
+```
+
+Returns the contained value `Ok`, otherwise `def` call.
+
+```ts
+import * as R from "perlica/Result";
+
+const len = (s: string) => s.length;
+
+expect(R.unwrapOrElse(R.ok(4), len)).toEqual(4);
+expect(R.unwrapOrElse(R.err("error"), len)).toEqual(5);
+```
+
+See also the **[Result.unwrap_or_else](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or_else)**
