@@ -529,7 +529,9 @@ export const isNotNullable = <T>(value: T): value is NonNullable<T> =>
  * expect(IsPromise(4)).toBeFalse();
  * ```
  */
-export const isPromise = (value: unknown): value is Promise<unknown>  => value instanceof Promise;
+export const isPromise = (value: unknown): value is Promise<unknown>  =>
+  hasProperty(value, "then") && hasProperty(value, "catch")
+  && isFunction(value.then) && isFunction(value.catch);
 
 /**
  * Returns `true` if `value` is `RegExp`, otherwise returns `false`.
