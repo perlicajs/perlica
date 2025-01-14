@@ -56,6 +56,7 @@ describe("Predicate", () => {
     const predicate = eq(5);
 
     expect(predicate(5)).toBeTrue();
+    expect(predicate("5" as unknown as number)).toBeFalse();
     expect(predicate(4)).toBeFalse();
   });
 

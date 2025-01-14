@@ -120,7 +120,7 @@ export const any = <T>(predicates: Iterable<Predicate<T>>): Predicate<T> => {
  * expect(predicate(4)).toBeFalse();
  * ```
  */
-export const eq = <T>(that: T): Predicate<T> => value => value == that;
+export const eq = <T>(that: T): Predicate<T> => value => value === that;
 
 /**
  * Returns a new predicate.
