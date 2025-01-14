@@ -9,7 +9,7 @@ export default defineConfig({
       { text: "Home", link: "/" },
     ],
     search: {
-      provider: 'local'
+      provider: "local",
     },
     sidebar: [
       {
