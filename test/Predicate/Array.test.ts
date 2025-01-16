@@ -4,8 +4,8 @@ import {
   isEmpty,
   isNonEmpty,
   len,
-  max,
-  min,
+  maxLen,
+  minLen,
 } from "~/Predicate/Array";
 
 describe("Predicate/Array", () => {
@@ -19,15 +19,15 @@ describe("Predicate/Array", () => {
     expect(isNonEmpty([])).toBeFalse();
   });
 
-  it("max", () => {
-    const predicate = max(4);
+  it("maxLen", () => {
+    const predicate = maxLen(4);
 
     expect(predicate([1, 2, 3, 4])).toBeTrue();
     expect(predicate([1, 2, 3, 4, 5])).toBeFalse();
   });
 
-  it("min", () => {
-    const predicate = min(4);
+  it("minLen", () => {
+    const predicate = minLen(4);
 
     expect(predicate([1, 2, 3, 4])).toBeTrue();
     expect(predicate([1, 2, 3])).toBeFalse();

@@ -102,7 +102,8 @@ export const isMatch = (regexp: RegExp): predicate.Predicate<string> =>
  * expect(predicate("Hello world")).toBeFalse();
  * ```
  */
-export const max = (count: number): predicate.Predicate<string> => value => value.length <= count;
+export const maxLen = (count: number): predicate.Predicate<string> =>
+  value => value.length <= count;
 
 /**
  * Returns a new `Predicate<T>`.
@@ -116,7 +117,8 @@ export const max = (count: number): predicate.Predicate<string> => value => valu
  * expect(predicate("Hello world")).toBeFalse();
  * ```
  */
-export const min = (count: number): predicate.Predicate<string> => value => value.length >= count;
+export const minLen = (count: number): predicate.Predicate<string> =>
+  value => value.length >= count;
 
 /**
  * Returns a new `Predicate<T>`.

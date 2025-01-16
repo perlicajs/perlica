@@ -2,7 +2,7 @@ import { describe, it, expect } from "bun:test";
 
 import {
   isEmpty, includes, startsWith, endsWith, isMatch,
-  max, min, len,
+  maxLen, minLen, len,
 } from "~/Predicate/String";
 
 describe("Predicate/String", () => {
@@ -39,15 +39,15 @@ describe("Predicate/String", () => {
     expect(predicate("Fello world")).toBeFalse();
   });
 
-  it("max", () => {
-    const predicate = max(5);
+  it("maxLen", () => {
+    const predicate = maxLen(5);
 
     expect(predicate("Hello")).toBeTrue();
     expect(predicate("Hello world")).toBeFalse();
   });
 
-  it("min", () => {
-    const predicate = min(5);
+  it("minLen", () => {
+    const predicate = minLen(5);
 
     expect(predicate("Hello")).toBeTrue();
     expect(predicate("Hi")).toBeFalse();

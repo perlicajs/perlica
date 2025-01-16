@@ -50,7 +50,7 @@ export const isNonEmpty = <T>(self: T[]): self is [T, ...T[]] => self.length !==
  * expect(predicate([1, 2, 3, 4, 5])).toBeFalse();
  * ```
  */
-export const max = <T>(count: number): predicate.Predicate<T[]> =>
+export const maxLen = <T>(count: number): predicate.Predicate<T[]> =>
   value => value.length <= count;
 
 /**
@@ -65,7 +65,7 @@ export const max = <T>(count: number): predicate.Predicate<T[]> =>
  * expect(predicate([1, 2, 3])).toBeFalse();
  * ```
  */
-export const min = <T>(count: number): predicate.Predicate<T[]> =>
+export const minLen = <T>(count: number): predicate.Predicate<T[]> =>
   value => value.length >= count;
 
 /**

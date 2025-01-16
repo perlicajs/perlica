@@ -844,7 +844,7 @@ expect(predicate("Fello world")).toBeFalse();
 ### max
 
 ```ts
-export const max = (count: number): Predicate<string> 
+export const maxLen = (count: number): Predicate<string> 
 ```
 
 Returns a new `Predicate<T>`.\
@@ -864,7 +864,7 @@ expect(predicate("Hello world")).toBeFalse();
 ### min
 
 ```ts
-export const min = (count: number): Predicate<string> 
+export const minLen = (count: number): Predicate<string> 
 ```
 
 Returns a new `Predicate<T>`.\
@@ -939,7 +939,7 @@ expect(isEmpty([])).toBeFalse();
 ### max
 
 ```ts
-export const max = <T>(count: number): predicate.Predicate<T[]>
+export const maxLen = <T>(count: number): predicate.Predicate<T[]>
 ```
 
 Returns a new `Predicate<T>`.\
@@ -959,7 +959,7 @@ expect(predicate([1, 2, 3, 4, 5])).toBeFalse();
 ### min
 
 ```ts
-export const min = <T>(count: number): Predicate<T[]>
+export const minLen = <T>(count: number): Predicate<T[]>
 ```
 
 Returns a new `Predicate<T>`.\
