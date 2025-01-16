@@ -1,12 +1,12 @@
 import { describe, it, expect } from "bun:test";
 
 import {
-  not, and, lt, gt, or, all, any, eq, ne, le, ge,
-  hasProperty, isNull, isNullable, isNumber, isObject, isPromise, isNotNull, isNotNullable,
-  isAsyncIterable, isRecordOrArray,  isRegExp, isSet, isString, isSymbol, isTruthy, isUndefined,
-  isBigInt, isBoolean, isDate, isError, isFunction, isInteger, isIterable, isMap,  isNotUndefined,
-  isEmpty, includes, startsWith, endsWith, isMatch,
+  not, and, or, all, any, eq, ne,
+  hasProperty, isNull, isNullable, isNumber, isObject, isPromise, isNotNull, isNotNullable, isArray,
+  isAsyncIterable, isRecordOrArray, isRegExp, isSet, isString, isSymbol, isTruthy, isUndefined,
+  isBigInt, isBoolean, isDate, isError, isFunction, isInteger, isIterable, isMap, isNotUndefined,
 } from "~/Predicate";
+import * as Number from "~/Predicate/Number";
 
 describe("Predicate", () => {
   it("not", () => {
@@ -17,7 +17,7 @@ describe("Predicate", () => {
   });
 
   it("and", () => {
-    const between5And10 = and(lt(10), gt(5));
+    const between5And10 = and(Number.lt(10), Number.gt(5));
 
     expect(between5And10(7)).toBeTrue();
     expect(between5And10(2)).toBeFalse();
@@ -25,7 +25,7 @@ describe("Predicate", () => {
   });
 
   it("or", () => {
-    const less5OrGreater10 = or(lt(5), gt(10));
+    const less5OrGreater10 = or(Number.lt(5), Number.gt(10));
 
     expect(less5OrGreater10(7)).toBeFalse();
     expect(less5OrGreater10(2)).toBeTrue();
@@ -33,7 +33,7 @@ describe("Predicate", () => {
   });
 
   it("all", () => {
-    const myNumber = all([isNumber, lt(10), gt(5)]);
+    const myNumber = all([isNumber, Number.lt(10), Number.gt(5)]);
 
     expect(myNumber(7)).toBeTrue();
     expect(myNumber(2)).toBeFalse();
@@ -65,38 +65,6 @@ describe("Predicate", () => {
 
     expect(predicate(5)).toBeFalse();
     expect(predicate(4)).toBeTrue();
-  });
-
-  it("lt", () => {
-    const predicate = lt(4);
-
-    expect(predicate(5)).toBeFalse();
-    expect(predicate(4)).toBeFalse();
-    expect(predicate(3)).toBeTrue();
-  });
-
-  it("gt", () => {
-    const predicate = gt(4);
-
-    expect(predicate(5)).toBeTrue();
-    expect(predicate(4)).toBeFalse();
-    expect(predicate(3)).toBeFalse();
-  });
-
-  it("le", () => {
-    const predicate = le(4);
-
-    expect(predicate(5)).toBeFalse();
-    expect(predicate(4)).toBeTrue();
-    expect(predicate(3)).toBeTrue();
-  });
-
-  it("ge", () => {
-    const predicate = ge(4);
-
-    expect(predicate(5)).toBeTrue();
-    expect(predicate(4)).toBeTrue();
-    expect(predicate(3)).toBeFalse();
   });
 
   it("isNull", () => {
@@ -160,37 +128,11 @@ describe("Predicate", () => {
     expect(isString(true)).toBeFalse();
   });
 
-  it("isEmpty", () => {
-    expect(isEmpty("hello")).toBeFalse();
-    expect(isEmpty("")).toBeTrue();
-  });
-
-  it("includes", () => {
-    const predicate = includes("test");
-
-    expect(predicate("Hello test world")).toBeTrue();
-    expect(predicate("Hello world")).toBeFalse();
-  });
-
-  it("startsWith", () => {
-    const predicate = startsWith("test");
-
-    expect(predicate("test world")).toBeTrue();
-    expect(predicate("world")).toBeFalse();
-  });
-
-  it("endsWith", () => {
-    const predicate = endsWith("test");
-
-    expect(predicate("world test")).toBeTrue();
-    expect(predicate("world")).toBeFalse();
-  });
-
-  it("isMatch", () => {
-    const predicate = isMatch(/Hello*/);
-
-    expect(predicate("Hello world")).toBeTrue();
-    expect(predicate("Fello world")).toBeFalse();
+  it("isArray", () => {
+    expect(isArray([])).toBeTrue();
+    expect(isArray(4)).toBeFalse();
+    expect(isArray(null)).toBeFalse();
+    expect(isArray(true)).toBeFalse();
   });
 
   it("isFunction", () => {

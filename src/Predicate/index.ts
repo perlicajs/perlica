@@ -20,7 +20,7 @@ export interface Predicate<T> {
 export const not = <T>(self: Predicate<T>): Predicate<T> => value => !self(value);
 
 /**
- * Combines two predicates (`self` and `that`) into a new predicate.
+ * Combines two predicates (`self` and `that`) into a new `Predicate<T>`.
  * Returns `true` if both returns `true`, otherwise returns `false`.
  *
  * ```ts
@@ -37,7 +37,7 @@ export const and = <T>(self: Predicate<T>, that: Predicate<T>): Predicate<T> =>
   value => self(value) && that(value);
 
 /**
- * Combines two predicates (`self` and `that`) into a new predicate.
+ * Combines two predicates (`self` and `that`) into a new `Predicate<T>`.
  * Returns `true` if at least one returns `true`, otherwise returns `false`.
  *
  * ```ts
@@ -54,7 +54,7 @@ export const or = <T>(self: Predicate<T>, that: Predicate<T>): Predicate<T> =>
   value => self(value) || that(value);
 
 /**
- * Combining multiple `predicates` into a new predicate.
+ * Combining multiple `predicates` into a new `Predicate<T>`.
  * Returns `true` if all returns `true`, otherwise returns `false`.
  *
  * ```ts
@@ -79,7 +79,7 @@ export const all = <T>(predicates: Iterable<Predicate<T>>): Predicate<T> => {
 };
 
 /**
- * Combining multiple `predicates` into a new predicate.
+ * Combining multiple `predicates` into a new `Predicate<T>`.
  * Returns `true` if at least one returns `true`, otherwise returns `false`.
  *
  * ```ts
@@ -108,8 +108,8 @@ export const any = <T>(predicates: Iterable<Predicate<T>>): Predicate<T> => {
 };
 
 /**
- * Returns a new predicate.
- * Return true if `that` is equal to a pre-defined `value`.
+ * Returns a new `Predicate<T>`.
+ * Returns `true` if `that` is equal to a pre-defined `value`.
  *
  * ```ts
  * import { eq } from "perlica/Predicate"
@@ -123,8 +123,8 @@ export const any = <T>(predicates: Iterable<Predicate<T>>): Predicate<T> => {
 export const eq = <T>(that: T): Predicate<T> => value => value === that;
 
 /**
- * Returns a new predicate.
- * Return true if `that` is not equal to a pre-defined `value`.
+ * Returns a new `Predicate<T>`.
+ * Returns `true` if `that` is not equal to a pre-defined `value`.
  *
  * ```ts
  * import { ne } from "perlica/Predicate"
@@ -136,66 +136,6 @@ export const eq = <T>(that: T): Predicate<T> => value => value === that;
  * ```
  */
 export const ne = <T>(that: T): Predicate<T> => value => value !== that;
-
-/**
- * Returns a new predicate.
- * Return true if `that` is less than a pre-defined `value`.
- * ```
- * import { lt } from "perlica/Predicate"
- *
- * const predicate = lt(4);
- *
- * expect(predicate(5)).toBeFalse();
- * expect(predicate(4)).toBeFalse();
- * expect(predicate(3)).toBeTrue();
- * ```
- */
-export const lt = <T>(that: T): Predicate<T> => value => value < that;
-
-/**
- * Returns a new predicate.
- * Return true if `that` is greater than a pre-defined `value`.
- * ```
- * import { gt } from "perlica/Predicate"
- *
- * const predicate = gt(4);
- *
- * expect(predicate(5)).toBeTrue();
- * expect(predicate(4)).toBeFalse();
- * expect(predicate(3)).toBeFalse();
- * ```
- */
-export const gt = <T>(that: T): Predicate<T> => value => value > that;
-
-/**
- * Returns a new predicate.
- * Return true if `that` is less than or equal to a pre-defined `value`.
- * ```
- * import { le } from "perlica/Predicate"
- *
- * const predicate = le(4);
- *
- * expect(predicate(5)).toBeFalse();
- * expect(predicate(4)).toBeTrue();
- * expect(predicate(3)).toBeTrue();
- * ```
- */
-export const le = <T>(that: T): Predicate<T> => value => value <= that;
-
-/**
- * Returns a new predicate.
- * Return true if `that` is greater than or equal to a pre-defined `value`.
- * ```
- * import { ge } from "perlica/Predicate"
- *
- * const predicate = ge(4);
- *
- * expect(predicate(5)).toBeTrue();
- * expect(predicate(4)).toBeTrue();
- * expect(predicate(3)).toBeFalse();
- * ```
- */
-export const ge = <T>(that: T): Predicate<T> => value => value >= that;
 
 /**
  * Any typed array
@@ -239,7 +179,7 @@ export const isNull = (value: unknown): value is null => value === null;
  * expect(isNotNull("hello")).toBeTrue();
  * ```
  */
-export const isNotNull = (value: unknown): value is null => value !== null;
+export const isNotNull = <T>(value: T): value is Exclude<T, null> => value !== null;
 
 /**
  * Returns `true` if `value` is `undefined`, otherwise returns `false`.
@@ -267,7 +207,7 @@ export const isUndefined = (value: unknown): value is undefined => value === und
  * expect(isNotUndefined("hello")).toBeTrue();
  * ```
  */
-export const isNotUndefined = (value: unknown): value is undefined => value !== undefined;
+export const isNotUndefined = <T>(value: T): value is Exclude<T, undefined> => value !== undefined;
 
 /**
  * Returns `true` if `value` is `true` or `false`, otherwise returns `false`.
@@ -338,80 +278,18 @@ export const isBigInt = (value: unknown): value is bigint => typeof value === "b
 export const isString = (value: unknown): value is string => typeof value === "string";
 
 /**
- * Returns `true` if `self` is empty, otherwise returns `false`.
+ * Returns `true` if `value` is `Array`, otherwise returns `false`.
  *
  * ```ts
- * import { isEmpty } from "perlica/Predicate"
+ * import { isArray } from "perlica/Predicate"
  *
- * expect(isEmpty("hello")).toBeFalse();
- * expect(isEmpty("")).toBeTrue();
+ * expect(isArray([])).toBeTrue();
+ * expect(isArray(4)).toBeFalse();
+ * expect(isArray(null)).toBeFalse();
+ * expect(isArray(true)).toBeFalse();
  * ```
  */
-export const isEmpty = (self: string): self is "" => self.length === 0;
-
-/**
- * Returns a new predicate.
- * Returns `true` if `searchString` appears as a substring of `self`, otherwise returns `false`.
- *
- * ```ts
- * import { includes } from "perlica/Predicate"
- *
- * const predicate = includes("test");
- *
- * expect(predicate("Hello test world")).toBeTrue();
- * expect(predicate("Hello world")).toBeFalse();
- * ```
- */
-export const includes = (searchString: string, position?: number): Predicate<string> =>
-  value => value.includes(searchString, position);
-
-/**
- * Returns a new predicate.
- * Returns `true` if `searchString` starts with a `self`, otherwise returns `false`.
- *
- * ```ts
- * import { startsWith } from "perlica/Predicate"
- *
- * const predicate = startsWith("test");
- *
- * expect(predicate("test world")).toBeTrue();
- * expect(predicate("world")).toBeFalse();
- * ```
- */
-export const startsWith = (searchString: string, position?: number): Predicate<string> =>
-  value => value.startsWith(searchString, position);
-
-/**
- * Returns a new predicate.
- * Returns `true` if `searchString` ends with a `self`, otherwise returns `false`.
- *
- * ```ts
- * import { endsWith } from "perlica/Predicate"
- *
- * const predicate = endsWith("test");
- *
- * expect(predicate("world test")).toBeTrue();
- * expect(predicate("world")).toBeFalse();
- * ```
- */
-export const endsWith = (searchString: string, position?: number): Predicate<string> =>
-  value => value.endsWith(searchString, position);
-
-/**
- * Returns a new predicate.
- * Returns `true` if a regular expression (`regexp`) to match `self`, otherwise returns `false`.
- *
- * ```ts
- * import { isMatch } from "perlica/Predicate"
- *
- * const predicate = isMatch(/Hello.*\/);
- *
- * expect(predicate("Hello world")).toBeTrue();
- * expect(predicate("Fello world")).toBeFalse();
- * ```
- */
-export const isMatch = (regexp: RegExp): Predicate<string> =>
-  value => isNotNull(value.match(regexp));
+export const isArray = (value: unknown): value is Array<unknown> => Array.isArray(value);
 
 /**
  * Returns `true` if `value` is `Function`, otherwise returns `false`.

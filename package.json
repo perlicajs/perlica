@@ -33,9 +33,9 @@
       "require": "./dist/cjs/Iterator.cjs"
     },
     "./Predicate": {
-      "types": "./dist/Predicate.d.ts",
-      "import": "./dist/Predicate.js",
-      "require": "./dist/cjs/Predicate.cjs"
+      "types": "./dist/Predicate/*",
+      "import": "./dist/Predicate/*",
+      "require": "./dist/Predicate/*"
     }
   },
   "repository": {
@@ -57,8 +57,8 @@
     "type-inference"
   ],
   "scripts": {
-    "test": "bun test ./test/*.test.ts",
-    "test:watch": "bun test ./test/*.test.ts --watch ",
+    "test": "bun test ./test/**/*.test.ts",
+    "test:watch": "bun test ./test/**/*.test.ts --watch ",
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix",
     "dist": "bun build.ts",

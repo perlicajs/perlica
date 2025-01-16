@@ -2,9 +2,11 @@
 outline: deep
 ---
 
-# Predicate
+# Predicate overview
 
-## Overview
+## Instances
+
+### Predicate
 
 ```ts
 export interface Predicate<T> {
@@ -12,7 +14,7 @@ export interface Predicate<T> {
 }
 ```
 
-## Functions
+## Combinators
 
 ### not
 
@@ -20,7 +22,7 @@ export interface Predicate<T> {
 export const not = <T>(self: Predicate<T>): Predicate<T>
 ```
 
-Returns `Predicate` with negates result.
+Returns `Predicate<T>` with negates result.
 
 ```ts
 import { not, isNumber } from "perlica/Predicate"
@@ -39,11 +41,12 @@ expect(isNotNumber("hello")).toBeTrue();
 export const and = <T>(self: Predicate<T>, that: Predicate<T>): Predicate<T>
 ```
 
-Combines two predicates (`self` and `that`) into a new predicate.\
+Combines two predicates (`self` and `that`) into a new `Predicate<T>`.\
 Returns `true` if both returns `true`, otherwise returns `false`.
 
 ```ts
-import { and, lt, gt } from "perlica/Predicate"
+import { and } from "perlica/Predicate"
+import { lt, gt } from "perlica/Predicate/Number"
 
 const between5And10 = and(lt(10), gt(5));
 
@@ -60,11 +63,12 @@ expect(between5And10(12)).toBeFalse();
 export const or = <T>(self: Predicate<T>, that: Predicate<T>): Predicate<T>
 ```
 
-Combines two predicates (`self` and `that`) into a new predicate.\
+Combines two predicates (`self` and `that`) into a new `Predicate<T>`.\
 Returns `true` if at least one returns `true`, otherwise returns `false`.
 
 ```ts
-import { or, lt, gt } from "perlica/Predicate"
+import { or } from "perlica/Predicate"
+import { lt, gt} from "perlica/Predicate/Number"
 
 const less5OrGreater10 = or(lt(5), gt(10));
 
@@ -81,11 +85,12 @@ expect(less5OrGreater10(12)).toBeTrue();
 export const all = <T>(predicates: Iterable<Predicate<T>>): Predicate<T>
 ```
 
-Combining multiple `predicates` into a new predicate.\
+Combining multiple `predicates` into a new `Predicate<T>`.\
 Returns `true` if all returns `true`, otherwise returns `false`.
 
 ```ts
-import { all, lt, gt, isNumber } from "perlica/Predicate"
+import { all, isNumber } from "perlica/Predicate"
+import { lt, gt } from "perlica/Predicate/Number"
 
 const myNumber = all([isNumber, lt(10), gt(5)]);
 
@@ -102,7 +107,7 @@ expect(myNumber(12)).toBeFalse();
 export const any = <T>(predicates: Iterable<Predicate<T>>): Predicate<T> 
 ```
 
-Combining multiple `predicates` into a new predicate.\
+Combining multiple `predicates` into a new `Predicate<T>`.\
 Returns `true` if at least one returns `true`, otherwise returns `false`.
 
 ```ts
@@ -119,16 +124,14 @@ expect(isNumberOrStringOrBoolean(undefined)).toBeFalse();
 expect(isNumberOrStringOrBoolean({})).toBeFalse();
 ```
 
----
-
 ### eq
 
 ```ts
 export const eq = <T>(that: T): Predicate<T>
 ```
 
-Returns a new predicate.\
-Return true if `that` is equal to a pre-defined `value`.
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is equal to a pre-defined `value`.
 
 ```ts
 import { eq } from "perlica/Predicate"
@@ -147,8 +150,8 @@ expect(predicate(4)).toBeFalse();
 export const ne = <T>(that: T): Predicate<T>
 ```
 
-Returns a new predicate.\
-Return true if `that` is not equal to a pre-defined `value`.
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is not equal to a pre-defined `value`.
 
 ```ts
 import { ne } from "perlica/Predicate"
@@ -159,91 +162,7 @@ expect(predicate(5)).toBeFalse();
 expect(predicate(4)).toBeTrue();
 ```
 
----
-
-### lt
-
-```ts
-export const lt = <T>(that: T): Predicate<T>
-```
-
-Returns a new predicate.\
-Return true if `that` is less than a pre-defined `value`.
-
-```ts
-import { lt } from "perlica/Predicate"
-
-const predicate = lt(4);
-
-expect(predicate(5)).toBeFalse();
-expect(predicate(4)).toBeFalse();
-expect(predicate(3)).toBeTrue();
-```
-
----
-
-### gt
-
-```ts
-export const gt = <T>(that: T): Predicate<T>
-```
-
-Returns a new predicate.\
-Return true if `that` is greater than a pre-defined `value`.
-
-```ts
-import { gt } from "perlica/Predicate"
-
-const predicate = gt(4);
-
-expect(predicate(5)).toBeTrue();
-expect(predicate(4)).toBeFalse();
-expect(predicate(3)).toBeFalse();
-```
-
----
-
-### le
-
-```ts
-export const le = <T>(that: T): Predicate<T>
-```
-
-Returns a new predicate.\
-Return true if `that` is less than or equal to a pre-defined `value`.
-
-```ts
-import { le } from "perlica/Predicate"
-
-const predicate = le(4);
-
-expect(predicate(5)).toBeFalse();
-expect(predicate(4)).toBeTrue();
-expect(predicate(3)).toBeTrue();
-```
-
----
-
-### ge
-
-```ts
-export const ge = <T>(that: T): Predicate<T>
-```
-
-Returns a new predicate.\
-Return true if `that` is greater than or equal to a pre-defined `value`.
-
-```ts
-import { ge } from "perlica/Predicate"
-
-const predicate = ge(4);
-
-expect(predicate(5)).toBeTrue();
-expect(predicate(4)).toBeTrue();
-expect(predicate(3)).toBeFalse();
-```
-
----
+## Guards
 
 ### isNull
 
@@ -267,7 +186,7 @@ expect(isNull("hello")).toBeFalse();
 ### isNotNull
 
 ```ts
-export const isNotNull = (value: unknown): value is null
+export const isNotNull = <T>(value: T): value is Exclude<T, null> 
 ```
 
 Returns `true` if `value` is not `null`, otherwise returns `false`.
@@ -305,7 +224,7 @@ expect(isUndefined("hello")).toBeFalse();
 ### isNotUndefined
 
 ```ts
-export const isNotUndefined = (value: unknown): value is undefined
+export const isNotUndefined = <T>(value: T): value is Exclude<T, undefined> 
 ```
 
 Returns `true` if `value` is not `undefined`, otherwise returns `false`.
@@ -410,103 +329,6 @@ expect(isString("hello")).toBeTrue();
 expect(isString(4)).toBeFalse();
 expect(isString(null)).toBeFalse();
 expect(isString(true)).toBeFalse();
-```
-
----
-
-### isEmpty
-
-```ts
-export const isEmpty = (self: string): self is ""
-```
-
-Returns `true` if `self` is empty, otherwise returns `false`.
-
-```ts
-import { isEmpty } from "perlica/Predicate"
-
-expect(isEmpty("hello")).toBeFalse();
-expect(isEmpty("")).toBeTrue();
-```
-
----
-
-### includes
-
-```ts
-export const includes = (searchString: string, position?: number): Predicate<string>
-```
-
-Returns a new predicate.\
-Returns `true` if `searchString` appears as a substring of `self`, otherwise returns `false`.
-
-```ts
-import { includes } from "perlica/Predicate"
-
-const predicate = includes("test");
-
-expect(predicate("Hello test world")).toBeTrue();
-expect(predicate("Hello world")).toBeFalse();
-```
-
----
-
-### startsWith
-
-```ts
-export const startsWith = (searchString: string, position?: number): Predicate<string>
-```
-
-Returns a new predicate.\
-Returns `true` if `searchString` starts with a `self`, otherwise returns `false`.
-
-```ts
-import { startsWith } from "perlica/Predicate"
-
-const predicate = startsWith("test");
-
-expect(predicate("test world")).toBeTrue();
-expect(predicate("world")).toBeFalse();
-```
-
----
-
-### endsWith
-
-```ts
-export const endsWith = (searchString: string, position?: number): Predicate<string>
-```
-
-Returns a new predicate.\
-Returns `true` if `searchString` ends with a `self`, otherwise returns `false`.
-
-```ts
-import { endsWith } from "perlica/Predicate"
-
-const predicate = endsWith("test");
-
-expect(predicate("world test")).toBeTrue();
-expect(predicate("world")).toBeFalse();
-```
-
----
-
-### isMatch
-
-```ts
-export const isMatch = (regexp: RegExp): Predicate<string>
-```
-
-Returns a new predicate.\
-Returns `true` if a regular expression (`regexp`) to match `self`, otherwise returns `false`.
-
-```ts
-import { isMatch } from "perlica/Predicate"
-
-const predicate = isMatch(/Hello.*/);
-
-expect(predicate("Hello world")).toBeTrue();
-expect(predicate("Fello world")).toBeFalse();
 ```
 
 ---
@@ -919,3 +741,623 @@ export const isBigUint64Array = (value: unknown): value is BigUint64Array
 ```
 
 Returns `true` if `value` is `BigUint64Array`, otherwise returns `false`
+
+## String
+
+### isEmpty
+
+```ts
+export const isEmpty = (self: string): self is ""
+```
+
+Returns `true` if `self` is empty, otherwise returns `false`.
+
+```ts
+import { isEmpty } from "perlica/Predicate/String"
+
+expect(isEmpty("hello")).toBeFalse();
+expect(isEmpty("")).toBeTrue();
+```
+
+---
+
+### includes
+
+```ts
+export const includes = (searchString: string, position?: number): Predicate<string>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `searchString` appears as a substring of `self`, otherwise returns `false`.
+
+```ts
+import { includes } from "perlica/Predicate/String"
+
+const predicate = includes("test");
+
+expect(predicate("Hello test world")).toBeTrue();
+expect(predicate("Hello world")).toBeFalse();
+```
+
+---
+
+### startsWith
+
+```ts
+export const startsWith = (searchString: string, position?: number): Predicate<string>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `searchString` starts with a `self`, otherwise returns `false`.
+
+```ts
+import { startsWith } from "perlica/Predicate/String"
+
+const predicate = startsWith("test");
+
+expect(predicate("test world")).toBeTrue();
+expect(predicate("world")).toBeFalse();
+```
+
+---
+
+### endsWith
+
+```ts
+export const endsWith = (searchString: string, position?: number): Predicate<string>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `searchString` ends with a `self`, otherwise returns `false`.
+
+```ts
+import { endsWith } from "perlica/Predicate/String"
+
+const predicate = endsWith("test");
+
+expect(predicate("world test")).toBeTrue();
+expect(predicate("world")).toBeFalse();
+```
+
+---
+
+### isMatch
+
+```ts
+export const isMatch = (regexp: RegExp): Predicate<string>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if a regular expression (`regexp`) to match `self`, otherwise returns `false`.
+
+```ts
+import { isMatch } from "perlica/Predicate/String"
+
+const predicate = isMatch(/Hello.*/);
+
+expect(predicate("Hello world")).toBeTrue();
+expect(predicate("Fello world")).toBeFalse();
+```
+
+---
+
+### max
+
+```ts
+export const max = (count: number): Predicate<string> 
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `value` is length less or equal to a pre-defined `count`.
+
+```ts
+import { max } from "perlica/Predicate/String"
+
+const predicate = max(5);
+
+expect(predicate("Hello")).toBeTrue();
+expect(predicate("Hello world")).toBeFalse();
+```
+
+---
+
+### min
+
+```ts
+export const min = (count: number): Predicate<string> 
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `value` is length greater or equal to a pre-defined `count`.
+
+```ts
+import { min } from "perlica/Predicate/String"
+
+const predicate = min(5);
+
+expect(predicate("Hello")).toBeTrue();
+expect(predicate("Hello world")).toBeFalse();
+```
+
+---
+
+### len
+
+```ts
+export const len = (count: number): Predicate<string>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `value` is length equal to a pre-defined `count`.
+
+```ts
+import { len } from "perlica/Predicate/String"
+
+const predicate = len(5);
+
+expect(predicate("Hello")).toBeTrue();
+expect(predicate("Hi")).toBeFalse();
+expect(predicate("Hello world")).toBeFalse();
+```
+
+## Array
+
+### isEmpty
+
+```ts
+export const isEmpty = <T>(self: T[]): self is []
+```
+
+Returns `true` if `self` is empty, otherwise returns `false`.
+
+```ts
+import { isEmpty } from "perlica/Predicate/Array"
+ *
+expect(isEmpty([4])).toBeFalse();
+expect(isEmpty([])).toBeTrue();
+```
+
+---
+
+### isNonEmpty
+
+```ts
+export const isNonEmpty = <T>(self: T[]): self is [T, ...T[]]
+```
+
+Returns `true` if `self` is not empty, otherwise returns `false`.
+
+```ts
+import { isNonEmpty } from "perlica/Predicate/Array"
+ *
+expect(isEmpty([4])).toBeTrue();
+expect(isEmpty([])).toBeFalse();
+```
+
+---
+
+### max
+
+```ts
+export const max = <T>(count: number): predicate.Predicate<T[]>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `value` is length less or equal to a pre-defined `count`.
+
+```ts
+import { max } from "perlica/Predicate/Array"
+
+const predicate = max(5);
+
+expect(predicate([1, 2, 3, 4])).toBeTrue();
+expect(predicate([1, 2, 3, 4, 5])).toBeFalse();
+```
+
+---
+
+### min
+
+```ts
+export const min = <T>(count: number): Predicate<T[]>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `value` is length greater or equal to a pre-defined `count`.
+
+```ts
+import { min } from "perlica/Predicate/Array"
+
+const predicate = min(4);
+
+expect(predicate([1, 2, 3, 4])).toBeTrue();
+expect(predicate([1, 2, 3])).toBeFalse();
+```
+
+---
+
+### len
+
+```ts
+export const len = <T>(count: number): Predicate<T[]> 
+```
+
+Returns a new `Predicate<T>`.\
+Return `true` if `value` is length equal to a pre-defined `count`.
+
+```ts
+import { len } from "perlica/Predicate/Array"
+
+const predicate = len(4);
+
+expect(predicate([1, 2, 3, 4])).toBeTrue();
+expect(predicate([1, 2])).toBeFalse();
+expect(predicate([1, 2, 3, 4, 5])).toBeFalse();
+```
+
+## Number
+
+### isPositive
+
+```ts
+export const isPositive = (value: number): boolean
+```
+
+Returns `true` if `value > 0`, otherwise returns `false`.
+
+```ts
+import { isPositive } from "perlica/Predicate/Number"
+
+expect(isPositive(0)).toBeFalse();
+expect(isPositive(4)).toBeTrue();
+expect(isPositive(-4)).toBeFalse();
+```
+
+---
+
+### isNonNegative
+
+```ts
+export const isNonNegative = (value: number): boolean 
+```
+
+Returns `true` if `value >= 0`, otherwise returns `false`.
+
+```ts
+import { isNonNegative } from "perlica/Predicate/Number"
+
+expect(isNonNegative(0)).toBeTrue();
+expect(isNonNegative(4)).toBeTrue();
+expect(isNonNegative(-4)).toBeFalse();
+```
+
+---
+
+### isNegative
+
+```ts
+export const isNegative = (value: number): boolean
+```
+
+Returns `true` if `value < 0`, otherwise returns `false`.
+
+```ts
+import { isNegative } from "perlica/Predicate/Number"
+
+expect(isNegative(0)).toBeFalse();
+expect(isNegative(4)).toBeFalse();
+expect(isNegative(-4)).toBeTrue();
+```
+
+---
+
+### isNonPositive
+
+```ts
+export const isNonPositive = (value: number): boolean
+```
+
+Returns `true` if `value <= 0`, otherwise returns `false`.
+
+```ts
+import { isNonPositive } from "perlica/Predicate/Number"
+
+expect(isNonPositive(0)).toBeTrue();
+expect(isNonPositive(4)).toBeFalse();
+expect(isNonPositive(-4)).toBeTrue();
+```
+
+---
+
+### isFinite
+
+```ts
+export const isFinite = (value: number): boolean
+```
+
+Returns `true` if `value` is finite, not `Infinity` or `-Infinity`, otherwise returns `false`.
+
+```ts
+import { isFinite } from "perlica/Predicate/Number"
+
+expect(isFinite(4 / 2)).toBeTrue();
+expect(isFinite(4 / 0)).toBeFalse();
+```
+
+---
+
+### multipleOf
+
+```ts
+export const multipleOf = (that: number): Predicate<number> 
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `value` is evenly divisible by a pre-defined `that`.
+
+```ts
+import { multipleOf } from "perlica/Predicate/Number"
+
+const predicate = multipleOf(2);
+
+expect(predicate(4)).toBeTrue();
+expect(predicate(3)).toBeFalse();
+```
+
+---
+
+### lt
+
+```ts
+export const lt = <T>(that: T): Predicate<T>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is less than a pre-defined `value`.
+
+```ts
+import { lt } from "perlica/Predicate/Number"
+
+const predicate = lt(4);
+
+expect(predicate(5)).toBeFalse();
+expect(predicate(4)).toBeFalse();
+expect(predicate(3)).toBeTrue();
+```
+
+---
+
+### gt
+
+```ts
+export const gt = <T>(that: T): Predicate<T>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is greater than a pre-defined `value`.
+
+```ts
+import { gt } from "perlica/Predicate/Number"
+
+const predicate = gt(4);
+
+expect(predicate(5)).toBeTrue();
+expect(predicate(4)).toBeFalse();
+expect(predicate(3)).toBeFalse();
+```
+
+---
+
+### le
+
+```ts
+export const le = <T>(that: T): Predicate<T>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is less than or equal to a pre-defined `value`.
+
+```ts
+import { le } from "perlica/Predicate/Number"
+
+const predicate = le(4);
+
+expect(predicate(5)).toBeFalse();
+expect(predicate(4)).toBeTrue();
+expect(predicate(3)).toBeTrue();
+```
+
+---
+
+### ge
+
+```ts
+export const ge = <T>(that: T): Predicate<T>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is greater than or equal to a pre-defined `value`.
+
+```ts
+import { ge } from "perlica/Predicate/Number"
+
+const predicate = ge(4);
+
+expect(predicate(5)).toBeTrue();
+expect(predicate(4)).toBeTrue();
+expect(predicate(3)).toBeFalse();
+```
+
+## BigInt
+
+### isPositive
+
+```ts
+export const isPositive = (value: number): boolean
+```
+
+Returns `true` if `value > 0`, otherwise returns `false`.
+
+```ts
+import { isPositive } from "perlica/Predicate/BigInt"
+
+expect(isPositive(0n)).toBeFalse();
+expect(isPositive(4n)).toBeTrue();
+expect(isPositive(-4n)).toBeFalse();
+```
+
+---
+
+### isNonNegative
+
+```ts
+export const isNonNegative = (value: number): boolean 
+```
+
+Returns `true` if `value >= 0`, otherwise returns `false`.
+
+```ts
+import { isNonNegative } from "perlica/Predicate/BigInt"
+
+expect(isNonNegative(0n)).toBeTrue();
+expect(isNonNegative(4n)).toBeTrue();
+expect(isNonNegative(-4n)).toBeFalse();
+```
+
+---
+
+### isNegative
+
+```ts
+export const isNegative = (value: number): boolean
+```
+
+Returns `true` if `value < 0`, otherwise returns `false`.
+
+```ts
+import { isNegative } from "perlica/Predicate/BigInt"
+
+expect(isNegative(0n)).toBeFalse();
+expect(isNegative(4n)).toBeFalse();
+expect(isNegative(-4n)).toBeTrue();
+```
+
+---
+
+### isNonPositive
+
+```ts
+export const isNonPositive = (value: number): boolean
+```
+
+Returns `true` if `value <= 0`, otherwise returns `false`.
+
+```ts
+import { isNonPositive } from "perlica/Predicate/BigInt"
+
+expect(isNonPositive(0n)).toBeTrue();
+expect(isNonPositive(4n)).toBeFalse();
+expect(isNonPositive(-4n)).toBeTrue();
+```
+
+---
+
+### multipleOf
+
+```ts
+export const multipleOf = (that: number): Predicate<number> 
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `value` is evenly divisible by a pre-defined `that`.
+
+```ts
+import { multipleOf } from "perlica/Predicate/BigInt"
+
+const predicate = multipleOf(2);
+
+expect(predicate(4n)).toBeTrue();
+expect(predicate(3n)).toBeFalse();
+```
+
+### lt
+
+```ts
+export const lt = <T>(that: T): Predicate<T>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is less than a pre-defined `value`.
+
+```ts
+import { lt } from "perlica/Predicate/BigInt"
+
+const predicate = lt(4);
+
+expect(predicate(5n)).toBeFalse();
+expect(predicate(4n)).toBeFalse();
+expect(predicate(3n)).toBeTrue();
+```
+
+---
+
+### gt
+
+```ts
+export const gt = <T>(that: T): Predicate<T>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is greater than a pre-defined `value`.
+
+```ts
+import { gt } from "perlica/Predicate/BigInt"
+
+const predicate = gt(4);
+
+expect(predicate(5n)).toBeTrue();
+expect(predicate(4n)).toBeFalse();
+expect(predicate(3n)).toBeFalse();
+```
+
+---
+
+### le
+
+```ts
+export const le = <T>(that: T): Predicate<T>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is less than or equal to a pre-defined `value`.
+
+```ts
+import { le } from "perlica/Predicate/BigInt"
+
+const predicate = le(4);
+
+expect(predicate(5n)).toBeFalse();
+expect(predicate(4n)).toBeTrue();
+expect(predicate(3n)).toBeTrue();
+```
+
+---
+
+### ge
+
+```ts
+export const ge = <T>(that: T): Predicate<T>
+```
+
+Returns a new `Predicate<T>`.\
+Returns `true` if `that` is greater than or equal to a pre-defined `value`.
+
+```ts
+import { ge } from "perlica/Predicate/BigInt"
+
+const predicate = ge(4);
+
+expect(predicate(5n)).toBeTrue();
+expect(predicate(4n)).toBeTrue();
+expect(predicate(3n)).toBeFalse();
+```
