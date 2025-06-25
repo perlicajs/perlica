@@ -40,7 +40,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/perlicajs/perlica"
+    "url": "git+https://github.com/perlicajs/perlica.git"
   },
   "bugs": "https://github.com/perlicajs/perlica/issues",
   "homepage": "https://perlicajs.com",
