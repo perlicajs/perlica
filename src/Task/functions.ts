@@ -1,4 +1,4 @@
-import { none, some, type Option } from "~/Option";
+import { none, some, type Option } from "../Option";
 import { err, ok, type Result }    from "../Result";
 import type { Task }               from "./Task";
 import { createTask }              from "./Task";

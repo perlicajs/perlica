@@ -1,4 +1,4 @@
-import type { Option }  from "~/Option";
+import type { Option }  from "../Option";
 import type {  Result } from "../Result";
 import {
   and,
@@ -19,7 +19,7 @@ import {
   unwrapOr,
   unwrapOrElse,
 } from "./functions";
-import { OnceIterator } from "~/Iterator";
+import { OnceIterator } from "../Iterator";
 
 export class Task<T> {
   readonly type = "Task" as const;
