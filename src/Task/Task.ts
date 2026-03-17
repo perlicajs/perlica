@@ -22,8 +22,6 @@ import {
 import { OnceIterator } from "../Iterator";
 
 export class Task<T> {
-  readonly type = "Task" as const;
-
   constructor(private readonly f: () => Promise<T>) {}
 
   unsafeRun(): Promise<T> {
