@@ -36,6 +36,11 @@
       "types": "./dist/Predicate/*",
       "import": "./dist/Predicate/*",
       "require": "./dist/Predicate/*"
+    },
+    "./Task": {
+      "types": "./dist/Task/*",
+      "import": "./dist/Task/*",
+      "require": "./dist/Task/*"
     }
   },
   "repository": {
