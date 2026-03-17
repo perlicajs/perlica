@@ -116,25 +116,6 @@ describe("task", () => {
     });
   });
 
-  describe("andThen", () => {
-    it("chains Tasks", async () => {
-      {
-        const a = of(4).andThen(x => of(x + 1));
-        const result = await a.unsafeRun();
-        expect(result).toEqual(5);
-
-        type _a = Assert<Task<number>, typeof a>;
-      }
-      {
-        const a = taskOk.andThen(x => of(x + 1));
-        const result = await a.unsafeRun();
-        expect(result).toEqual(5);
-
-        type _a = Assert<Task<number>, typeof a>;
-      }
-    });
-  });
-
   describe("flatten", () => {
     it("flattens using function", async () => {
       const nested = createTask(async () => createTask(async () => 42));
@@ -626,22 +607,6 @@ describe("task", () => {
 
       expect(executed).toBeTrue();
     });
-
-    it("does not execute task until unsafeRun is called even after andThen", async () => {
-      let executed = false;
-      const task = createTask(async () => {
-        executed = true;
-        return 42;
-      });
-
-      const andThened = task.andThen(x => of(x + 1));
-
-      expect(executed).toBeFalse();
-
-      await andThened.unsafeRun();
-
-      expect(executed).toBeTrue();
-    });
   });
 
   describe("immutability", () => {
@@ -665,17 +630,6 @@ describe("task", () => {
 
       expect(originalResult).toEqual(42);
       expect(flatMappedResult).toEqual(84);
-    });
-
-    it("original task is not mutated after andThen", async () => {
-      const task = of(42);
-      const andThened = task.andThen(x => of(x + 10));
-
-      const originalResult = await task.unsafeRun();
-      const andThenedResult = await andThened.unsafeRun();
-
-      expect(originalResult).toEqual(42);
-      expect(andThenedResult).toEqual(52);
     });
 
     it("can run original task multiple times after transformations", async () => {

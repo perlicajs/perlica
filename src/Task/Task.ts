@@ -2,7 +2,6 @@ import type { Option }  from "../Option";
 import type {  Result } from "../Result";
 import {
   and,
-  andThen,
   expect,
   filter,
   flatMap,
@@ -30,10 +29,6 @@ export class Task<T> {
 
   map<B>(f: (a: T) => B): Task<B> {
     return map(f)(this);
-  }
-
-  andThen<B>(f: (a: T) => Task<B>): Task<B> {
-    return andThen(f)(this);
   }
 
   flatMap<B>(f: (a: T) => Task<B>): Task<B> {

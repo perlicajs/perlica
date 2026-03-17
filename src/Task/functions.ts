@@ -8,7 +8,7 @@ import { createTask }              from "./Task";
  *    | Rust methods          | Perlica           |
  *    |-----------------------|-------------------|
  *    | and                   | and               |
- *    | and_then              | andThen           |
+ *    | and_then              | flatMap           |
  *    | expect                | expect            |
  *    | filter                | filter            |
  *    | flatten               | flatten           |
@@ -23,7 +23,6 @@ import { createTask }              from "./Task";
  *    | unwrap                | unwrap            |
  *    | unwrap_or             | unwrapOr          |
  *    | unwrap_or_else        | unwrapOrElse      |
- *    | and_then              | flatMap           |
  *    |                       | toResult          |
  *    |                       | of                |
  *    |                       | safeRun           |
@@ -46,8 +45,6 @@ export const flatMap = <A, B>(f: (a: A) => Task<B>) => (task: Task<A>): Task<B> 
     return await b.unsafeRun();
   });
 };
-
-export const andThen = flatMap;
 
 export const flatten = <T>(task: Task<Task<T>>): Task<T> => {
   return createTask(async () => {
