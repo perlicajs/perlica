@@ -1,7 +1,8 @@
 import { describe, it, expect } from "bun:test";
 
-import { Task, createTask } from "~/Task";
 import {
+  Task,
+  createTask,
   of,
   flatten,
   and,
@@ -18,8 +19,7 @@ import {
   toResult,
   safeRun,
   bind,
-} from "~/Task/functions";
-
+} from "~/Task";
 import { some, none, type Option } from "~/Option";
 import { ok, err, type Result }    from "~/Result";
 
