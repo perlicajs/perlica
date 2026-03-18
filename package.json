@@ -38,9 +38,9 @@
       "require": "./dist/Predicate/*"
     },
     "./Task": {
-      "types": "./dist/Task/*",
-      "import": "./dist/Task/*",
-      "require": "./dist/Task/*"
+      "types": "./dist/Task/index.d.ts",
+      "import": "./dist/Task/index.js",
+      "require": "./dist/cjs/Task/index.cjs"
     }
   },
   "repository": {
